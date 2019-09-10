@@ -36,6 +36,16 @@ public:
 	UPROPERTY(EditAnywhere)
 		float angularAcceleration;
 
+	UENUM(BlueprintType)
+		enum TickType
+	{
+		EULER = 0,//UMETA(DisplayName = "Euler"),
+		KINEMATIC //UMETA(DisplayName = "Kinematic")
+	};
+
+	UPROPERTY(EditAnywhere)
+	TickType particleTickType;
+
 private:
 	/*
 	-updatePositionEulerExplicit(float dt)
