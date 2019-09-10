@@ -17,6 +17,7 @@ void AParticle2D::BeginPlay()
 	Super::BeginPlay();
 	position = GetActorLocation();
 	UE_LOG(LogTemp, Warning, TEXT("Default Position: %s"), *position.ToString())
+		// set mass at beginning
 }
 
 // Called every frame
@@ -59,4 +60,25 @@ void AParticle2D::UpdateRotationKinematic(float dt)
 {
 	rotation += angularVelocity * dt + .5 * angularAcceleration * dt * dt;
 	angularVelocity += angularAcceleration * dt;
+}
+
+void AParticle2D::SetMass(float newMass)
+{
+	mass = newMass > 0 ? newMass : 0;
+	massInv = mass > 0 ? 1 / mass : 0;
+}
+
+float AParticle2D::GetMass()
+{
+	return mass;
+}
+
+void AParticle2D::AddForce(FVector newForce)
+{
+	force += newForce;
+}
+
+void AParticle2D::UpdateAcceleration()
+{
+	acceleration = massInv * force;
 }

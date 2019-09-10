@@ -35,16 +35,22 @@ public:
 		float angularVelocity;
 	UPROPERTY(EditAnywhere)
 		float angularAcceleration;
+	UPROPERTY(EditAnywhere)
+		float startMass;
 
+	void SetMass(float newMass);
+	float GetMass();
+
+	void AddForce(FVector newForce);
 private:
-	/*
-	-updatePositionEulerExplicit(float dt)
-	-updatePositionKinematic(float dt)
-	-updateRotationEulerExplicit(float dt)
-	-updateRotationKinematic(float dt)
-	*/
+
 	void UpdatePositionEulerExplicit(float dt);
 	void UpdatePositionKinematic(float dt);
 	void UpdateRotationEulerExplicit(float dt);
 	void UpdateRotationKinematic(float dt);
+
+	void UpdateAcceleration();
+
+	float mass, massInv;
+	FVector force;
 };
