@@ -6,6 +6,13 @@
 #include "GameFramework/Actor.h"
 #include "Particle2D.generated.h"
 
+UENUM()
+enum class TickType
+{
+	EULER = 0,//UMETA(DisplayName = "Euler"),
+	KINEMATIC //UMETA(DisplayName = "Kinematic")
+};
+
 UCLASS()
 class PHYSICS_ASSIGNMENTS_API AParticle2D : public AActor
 {
@@ -35,13 +42,6 @@ public:
 		float angularVelocity;
 	UPROPERTY(EditAnywhere)
 		float angularAcceleration;
-
-	UENUM(BlueprintType)
-		enum TickType
-	{
-		EULER = 0,//UMETA(DisplayName = "Euler"),
-		KINEMATIC //UMETA(DisplayName = "Kinematic")
-	};
 
 	UPROPERTY(EditAnywhere)
 	TickType particleTickType;
