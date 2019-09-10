@@ -26,10 +26,17 @@ void AParticle2D::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	acceleration.X = (float)sin(GetWorld()->GetRealTimeSeconds()) * 10;
-	UpdatePositionEulerExplicit(DeltaTime);
-	
-	UE_LOG(LogTemp, Warning, TEXT("Acceleration After Update: %s"), *acceleration.ToString())
-	//UpdateRotationEulerExplicit(DeltaTime);
+	rotation = (float)sin(GetWorld()->GetRealTimeSeconds()) * 10;
+	if (particleTickType == TickType::EULER)
+	{
+		UpdatePositionEulerExplicit(DeltaTime);
+		UpdateRotationEulerExplicit(DeltaTime);
+	}
+	else if (particleTickType == TickType::KINEMATIC)
+	{
+		UpdatePositionKinematic(DeltaTime);
+		UpdateRotationKinematic(DeltaTime);
+	}
 
 	SetActorLocation(position);
 	SetActorRotation(FRotator(rotation, 0, 0));
