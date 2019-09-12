@@ -21,7 +21,7 @@ FVector ForceGenerator::GenerateForce_gravity(FVector worldUp, float gravitation
 FVector ForceGenerator::GenerateForce_normal(FVector f_gravity, FVector surfaceNormal_unit)
 {
 	// f_normal = proj(f_gravity, surfaceNormal_unit)
-	return FVector();
+	return f_gravity.ProjectOnTo(surfaceNormal_unit);
 }
 
 FVector ForceGenerator::GenerateForce_sliding(FVector f_gravity, FVector f_normal)
@@ -33,7 +33,14 @@ FVector ForceGenerator::GenerateForce_sliding(FVector f_gravity, FVector f_norma
 FVector ForceGenerator::GenerateForce_friction_static(FVector f_normal, FVector f_opposing, float frictionCoefficient_static)
 {
 	// f_friction_s = -f_opposing if less than max, else -coeff*f_normal (max amount is coeff*|f_normal|)
-	return FVector();
+	if (f_opposing.Size() < (frictionCoefficient_static * f_normal.GetAbs()).Size())
+	{
+		return -f_opposing;
+	}
+	else
+	{
+		return -frictionCoefficient_static * f_normal;
+	}
 }
 
 FVector ForceGenerator::GenerateForce_friction_kinetic(FVector f_normal, FVector particleVelocity, float frictionCoefficient_kinetic)
@@ -54,5 +61,8 @@ FVector ForceGenerator::GenerateForce_drag(FVector particleVelocity, FVector flu
 FVector ForceGenerator::GenerateForce_spring(FVector particlePosition, FVector anchorPosition, float springRestingLength, float springStiffnessCoefficient)
 {
 	// f_spring = -coeff*(spring length - spring resting length)
-	return FVector();
+	FVector forceDir = particlePosition - anchorPosition;
+	float springLength = forceDir.Size();
+	forceDir.Normalize();
+	return -springStiffnessCoefficient * (springLength - springRestingLength) * forceDir;
 }
