@@ -88,4 +88,5 @@ void AParticle2D::AddForce(FVector newForce)
 void AParticle2D::UpdateAcceleration()
 {
 	acceleration = massInv * force;
+	force = FVector(0, 0, 0);
 }

@@ -6,6 +6,13 @@
 #include "GameFramework/Actor.h"
 #include "Particle2D.generated.h"
 
+UENUM()
+enum class TickType
+{
+	EULER = 0,
+	KINEMATIC
+};
+
 UCLASS()
 class PHYSICS_ASSIGNMENTS_API AParticle2D : public AActor
 {
@@ -37,6 +44,8 @@ public:
 		float angularAcceleration;
 	UPROPERTY(EditAnywhere)
 		float startMass;
+	UPROPERTY(EditAnywhere)
+		TickType particleTickType;
 
 	void SetMass(float newMass);
 	float GetMass();
