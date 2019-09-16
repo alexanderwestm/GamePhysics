@@ -12,26 +12,27 @@ ForceGenerator::~ForceGenerator()
 {
 }
 
+// works
 FVector ForceGenerator::GenerateForce_gravity(FVector worldUp, float gravitationalConstant, float particleMass)
 {
 	// f_gravity = mg
 	return worldUp * -gravitationalConstant * particleMass;
 }
 
+// works
 FVector ForceGenerator::GenerateForce_normal(FVector f_gravity, FVector surfaceNormal_unit)
 {
 	// f_normal = proj(f_gravity, surfaceNormal_unit)
 
 	FVector u = surfaceNormal_unit, v = f_gravity;
-	FVector temp;
+	FVector returnVec = f_gravity.ProjectOnTo(surfaceNormal_unit);
 
-	temp = (Dot3(u, v) / u.Size()) * (u / u.Size());
-
-	return temp;
+	return -returnVec;
 
 	//return f_gravity.ProjectOnTo(surfaceNormal_unit);
 }
 
+// works
 FVector ForceGenerator::GenerateForce_sliding(FVector f_gravity, FVector f_normal)
 {
 	// f_sliding = f_gravity + f_normal
@@ -41,12 +42,16 @@ FVector ForceGenerator::GenerateForce_sliding(FVector f_gravity, FVector f_norma
 FVector ForceGenerator::GenerateForce_friction_static(FVector f_normal, FVector f_opposing, float frictionCoefficient_static)
 {
 	// f_friction_s = -f_opposing if less than max, else -coeff*f_normal (max amount is coeff*|f_normal|)
-	if (f_opposing.Size() < (frictionCoefficient_static * f_normal.GetAbs()).Size())
+	float max = frictionCoefficient_static * f_normal.Size();
+
+	if (f_opposing.Size() < max)
 	{
 		return -f_opposing;
 	}
 	else
 	{
+		// am I supposed to rotate this 90 degrees?
+		// friction is always perpendicular to normal
 		return -frictionCoefficient_static * f_normal;
 	}
 }
@@ -56,14 +61,17 @@ FVector ForceGenerator::GenerateForce_friction_kinetic(FVector f_normal, FVector
 
 	// f_friction_k = -coeff*|f_normal| * unit(vel)
 	//FVector absNormal = FVector(Math.Abs(f_normal.X), f_normal.Y, f_normal.Z);
+
+	// same thing here, this is supposed to be rotated isn't it?
 	return -frictionCoefficient_kinetic * f_normal.GetAbs() * particleVelocity.Normalize();
 }
 
 FVector ForceGenerator::GenerateForce_drag(FVector particleVelocity, FVector fluidVelocity, float fluidDensity, float objectArea_crossSection, float objectDragCoefficient)
 {
-	// f_drag = (p * v^2 * area * coeff)/2
-	//return fluidDensity * 
-	return FVector();
+	// f_drag = (p * u^2 * area * coeff)/2
+	//return fluidDensity * sumVelocity^2 * objectArea * coeff
+	FVector sumVel = particleVelocity - fluidVelocity;
+	return (fluidDensity * sumVel * sumVel * objectArea_crossSection * objectDragCoefficient) * .5;
 }
 
 FVector ForceGenerator::GenerateForce_spring(FVector particlePosition, FVector anchorPosition, float springRestingLength, float springStiffnessCoefficient)

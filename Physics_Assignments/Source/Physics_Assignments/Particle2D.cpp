@@ -27,6 +27,9 @@ void AParticle2D::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	SetActorLocation(position);
+	SetActorRotation(FRotator(rotation, 0, 0));
+
 	if (particleTickType == TickType::EULER)
 	{
 		UpdatePositionEulerExplicit(DeltaTime);
@@ -38,17 +41,28 @@ void AParticle2D::Tick(float DeltaTime)
 		UpdateRotationKinematic(DeltaTime);
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Gravity Force: %s"), *forceOfGravity.ToString())
+	// TO DO: replace with surface normal instead of hard coded
+	FVector normalForce = ForceGenerator::GenerateForce_normal(forceOfGravity, FVector::UpVector);
 
+	AddForce(forceOfGravity);
 
-	AddForce(ForceGenerator::GenerateForce_normal(forceOfGravity, FVector::UpVector));
+	//AddForce(ForceGenerator::GenerateForce_sliding(forceOfGravity, normalForce));
 
-	UE_LOG(LogTemp, Warning, TEXT("Normal Force: %s"), *force.ToString())
+	//AddForce(FVector(1, 0, 0));
+	//AddForce(ForceGenerator::GenerateForce_friction_static(normalForce, FVector(10, 0, 0), .5));
+	
+	//AddForce(FVector(10, 0, 0));
+	//AddForce(ForceGenerator::GenerateForce_friction_kinetic(normalForce, velocity, .5));
+
+	//AddForce(forceOfGravity);
+	//AddForce(normalForce);
+
+	//AddForce(FVector(.1, 0, 0));
+	AddForce(ForceGenerator::GenerateForce_drag(velocity, FVector(0, 0, 0), 0.001225, 1.0, 1.05));
+
+	UE_LOG(LogTemp, Warning, TEXT("Sum Force: %s"), *force.ToString());
 
 	UpdateAcceleration();
-
-	SetActorLocation(position);
-	SetActorRotation(FRotator(rotation, 0, 0));
 }
 
 void AParticle2D::UpdatePositionEulerExplicit(float dt)
