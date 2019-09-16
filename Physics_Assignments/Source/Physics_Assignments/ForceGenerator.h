@@ -14,11 +14,11 @@ public:
 	~ForceGenerator();
 
 	
-	FVector GenerateForce_gravity(FVector worldUp, float gravitationalConstant, float particleMass);
-	FVector GenerateForce_normal(FVector f_gravity, FVector surfaceNormal_unit);
-	FVector GenerateForce_sliding(FVector f_gravity, FVector f_normal);
-	FVector GenerateForce_friction_static(FVector f_normal, FVector f_opposing, float frictionCoefficient_static);
-	FVector GenerateForce_friction_kinetic(FVector f_normal, FVector particleVelocity, float frictionCoefficient_kinetic);
-	FVector GenerateForce_drag(FVector particleVelocity, FVector fluidVelocity, float fluidDensity, float objectArea_crossSection, float objectDragCoefficient);
-	FVector GenerateForce_spring(FVector particlePosition, FVector anchorPosition, float springRestingLength, float springStiffnessCoefficient);
+	static FVector GenerateForce_gravity(FVector worldUp, float gravitationalConstant, float particleMass);
+	static FVector GenerateForce_normal(FVector f_gravity, FVector surfaceNormal_unit);
+	static FVector GenerateForce_sliding(FVector f_gravity, FVector f_normal);
+	static FVector GenerateForce_friction_static(FVector f_normal, FVector f_opposing, float frictionCoefficient_static);
+	static FVector GenerateForce_friction_kinetic(FVector f_normal, FVector particleVelocity, float frictionCoefficient_kinetic);
+	static FVector GenerateForce_drag(FVector particleVelocity, FVector fluidVelocity, float fluidDensity, float objectArea_crossSection, float objectDragCoefficient);
+	static FVector GenerateForce_spring(FVector particlePosition, FVector anchorPosition, float springRestingLength, float springStiffnessCoefficient);
 };

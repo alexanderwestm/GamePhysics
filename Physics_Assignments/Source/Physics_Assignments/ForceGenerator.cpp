@@ -21,7 +21,15 @@ FVector ForceGenerator::GenerateForce_gravity(FVector worldUp, float gravitation
 FVector ForceGenerator::GenerateForce_normal(FVector f_gravity, FVector surfaceNormal_unit)
 {
 	// f_normal = proj(f_gravity, surfaceNormal_unit)
-	return f_gravity.ProjectOnTo(surfaceNormal_unit);
+
+	FVector u = surfaceNormal_unit, v = f_gravity;
+	FVector temp;
+
+	temp = (Dot3(u, v) / u.Size()) * (u / u.Size());
+
+	return temp;
+
+	//return f_gravity.ProjectOnTo(surfaceNormal_unit);
 }
 
 FVector ForceGenerator::GenerateForce_sliding(FVector f_gravity, FVector f_normal)

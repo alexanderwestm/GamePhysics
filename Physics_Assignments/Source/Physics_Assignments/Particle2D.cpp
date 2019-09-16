@@ -3,6 +3,8 @@
 
 #include "Particle2D.h"
 #include "Runtime/Engine/Classes/Engine/World.h"
+#include "ForceGenerator.h"
+#include "ConstructorHelpers.h"
 
 // Sets default values
 AParticle2D::AParticle2D()
@@ -16,8 +18,8 @@ void AParticle2D::BeginPlay()
 {
 	Super::BeginPlay();
 	position = GetActorLocation();
-	UE_LOG(LogTemp, Warning, TEXT("Default Position: %s"), *position.ToString())
-		// set mass at beginning
+	SetMass(startMass);
+	forceOfGravity = ForceGenerator::GenerateForce_gravity(FVector::UpVector, 9.81, mass);
 }
 
 // Called every frame
@@ -25,8 +27,6 @@ void AParticle2D::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	acceleration.X = (float)sin(GetWorld()->GetRealTimeSeconds()) * 10;
-	rotation = (float)sin(GetWorld()->GetRealTimeSeconds()) * 10;
 	if (particleTickType == TickType::EULER)
 	{
 		UpdatePositionEulerExplicit(DeltaTime);
@@ -37,6 +37,15 @@ void AParticle2D::Tick(float DeltaTime)
 		UpdatePositionKinematic(DeltaTime);
 		UpdateRotationKinematic(DeltaTime);
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Gravity Force: %s"), *forceOfGravity.ToString())
+
+
+	AddForce(ForceGenerator::GenerateForce_normal(forceOfGravity, FVector::UpVector));
+
+	UE_LOG(LogTemp, Warning, TEXT("Normal Force: %s"), *force.ToString())
+
+	UpdateAcceleration();
 
 	SetActorLocation(position);
 	SetActorRotation(FRotator(rotation, 0, 0));
@@ -87,6 +96,6 @@ void AParticle2D::AddForce(FVector newForce)
 
 void AParticle2D::UpdateAcceleration()
 {
-	acceleration = massInv * force;
-	force = FVector(0, 0, 0);
+	acceleration = massInv * force * 100; // convert from cm to m
+	force = FVector::ZeroVector;
 }

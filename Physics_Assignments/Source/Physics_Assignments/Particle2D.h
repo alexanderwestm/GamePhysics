@@ -62,4 +62,5 @@ private:
 
 	float mass, massInv;
 	FVector force;
+	FVector forceOfGravity;
 };
