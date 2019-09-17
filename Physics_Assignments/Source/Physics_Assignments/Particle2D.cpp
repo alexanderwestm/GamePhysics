@@ -44,12 +44,12 @@ void AParticle2D::Tick(float DeltaTime)
 	// TO DO: replace with surface normal instead of hard coded
 	FVector normalForce = ForceGenerator::GenerateForce_normal(forceOfGravity, FVector::UpVector);
 
-	AddForce(forceOfGravity);
+	//AddForce(forceOfGravity);
 
 	//AddForce(ForceGenerator::GenerateForce_sliding(forceOfGravity, normalForce));
 
 	//AddForce(FVector(1, 0, 0));
-	//AddForce(ForceGenerator::GenerateForce_friction_static(normalForce, FVector(10, 0, 0), .5));
+	AddForce(ForceGenerator::GenerateForce_friction_static(normalForce, FVector(10, 0, 0), .5));
 	
 	//AddForce(FVector(10, 0, 0));
 	//AddForce(ForceGenerator::GenerateForce_friction_kinetic(normalForce, velocity, .5));
@@ -58,7 +58,9 @@ void AParticle2D::Tick(float DeltaTime)
 	//AddForce(normalForce);
 
 	//AddForce(FVector(.1, 0, 0));
-	AddForce(ForceGenerator::GenerateForce_drag(velocity, FVector(0, 0, 0), 0.001225, 1.0, 1.05));
+	//AddForce(ForceGenerator::GenerateForce_drag(velocity, FVector(0, 0, 0), 0.001225, 1.0, 1.05));
+
+	//AddForce(ForceGenerator::GenerateForce_spring(position, FVector(0, 0, 1000), 500, .2));
 
 	UE_LOG(LogTemp, Warning, TEXT("Sum Force: %s"), *force.ToString());
 

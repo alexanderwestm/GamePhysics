@@ -3,7 +3,7 @@
   <ItemGroup>
     <None Include="..\..\Physics_Assignments.uproject" />
     <Filter Include="Source">
-      <UniqueIdentifier>{D301BFB5-B131-4D68-A4DD-C63E62E21A33}</UniqueIdentifier>
+      <UniqueIdentifier>{E60ABBC4-CF17-474F-BB17-17D3B4965EA8}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\Source\Physics_Assignments.Target.cs">
       <Filter>Source</Filter>
@@ -12,7 +12,7 @@
       <Filter>Source</Filter>
     </None>
     <Filter Include="Config">
-      <UniqueIdentifier>{849D4C42-E515-4EF9-8FC9-26AFB23B31CB}</UniqueIdentifier>
+      <UniqueIdentifier>{33A00D5A-0813-4EB8-B38C-DF88BDD07F39}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\Config\DefaultEditor.ini">
       <Filter>Config</Filter>
@@ -24,55 +24,55 @@
       <Filter>Config</Filter>
     </None>
     <Filter Include="Config\Android">
-      <UniqueIdentifier>{9C49EE35-43A6-4173-B340-AF95F049DF34}</UniqueIdentifier>
+      <UniqueIdentifier>{96E55828-3174-43FE-856B-294E0DAA9580}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\Config\Android\AndroidEngine.ini">
       <Filter>Config\Android</Filter>
     </None>
     <Filter Include="Config\IOS">
-      <UniqueIdentifier>{B353ACF6-041C-4A43-ACED-8B34602E9475}</UniqueIdentifier>
+      <UniqueIdentifier>{7009C2C7-1DE2-4331-9F66-7C2E182CDBF8}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\Config\IOS\IOSEngine.ini">
       <Filter>Config\IOS</Filter>
     </None>
     <Filter Include="Config\Linux">
-      <UniqueIdentifier>{223B7514-4A08-40E1-BF7D-04115533FFE8}</UniqueIdentifier>
+      <UniqueIdentifier>{24781CAA-5358-4391-8735-B7E2934C4C88}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\Config\Linux\LinuxEngine.ini">
       <Filter>Config\Linux</Filter>
     </None>
     <Filter Include="Config\Mac">
-      <UniqueIdentifier>{75A794AC-AA72-4156-9318-4581B74182FA}</UniqueIdentifier>
+      <UniqueIdentifier>{FDDC6D9D-3BF4-4867-95E6-2DF217575EA8}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\Config\Mac\MacEngine.ini">
       <Filter>Config\Mac</Filter>
     </None>
     <Filter Include="Config\PS4">
-      <UniqueIdentifier>{2DEF8745-3EB7-4C1F-B9E9-36DBE486D923}</UniqueIdentifier>
+      <UniqueIdentifier>{83B19854-CC95-4872-A905-9F280AC681EE}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\Config\PS4\PS4Engine.ini">
       <Filter>Config\PS4</Filter>
     </None>
     <Filter Include="Config\Switch">
-      <UniqueIdentifier>{DD95B9E4-8B6B-444E-B249-666693457104}</UniqueIdentifier>
+      <UniqueIdentifier>{1A4594F6-E07F-4631-8D4D-10804800D8DF}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\Config\Switch\SwitchEngine.ini">
       <Filter>Config\Switch</Filter>
     </None>
     <Filter Include="Config\Windows">
-      <UniqueIdentifier>{2611DE55-2FF7-4BD3-ABF5-ECF40CF6656C}</UniqueIdentifier>
+      <UniqueIdentifier>{46D0315A-A889-421F-BF7F-4C040C1BCAC6}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\Config\Windows\WindowsEngine.ini">
       <Filter>Config\Windows</Filter>
     </None>
     <Filter Include="Config\XboxOne">
-      <UniqueIdentifier>{7A91C92B-C05E-4B4E-A376-DAEC5BB2FA69}</UniqueIdentifier>
+      <UniqueIdentifier>{D7663B38-F2B8-432F-B254-0C3F9C4CD7CF}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\Config\XboxOne\XboxOneEngine.ini">
       <Filter>Config\XboxOne</Filter>
     </None>
     <Filter Include="Source\Physics_Assignments">
-      <UniqueIdentifier>{E6E8C3D9-B00A-4A6A-B991-5624A1D374AB}</UniqueIdentifier>
+      <UniqueIdentifier>{985EDC3D-E3A6-4184-BBC7-22033345D41E}</UniqueIdentifier>
     </Filter>
     <ClCompile Include="..\..\Source\Physics_Assignments\ForceGenerator.cpp">
       <Filter>Source\Physics_Assignments</Filter>

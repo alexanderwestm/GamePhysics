@@ -80,5 +80,5 @@ FVector ForceGenerator::GenerateForce_spring(FVector particlePosition, FVector a
 	FVector forceDir = particlePosition - anchorPosition;
 	float springLength = forceDir.Size();
 	forceDir.Normalize();
-	return -springStiffnessCoefficient * (springLength - springRestingLength) * forceDir;
+	return springStiffnessCoefficient * (springRestingLength - springLength) * forceDir;
 }
