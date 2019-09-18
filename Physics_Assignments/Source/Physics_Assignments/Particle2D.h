@@ -13,6 +13,18 @@ enum class TickType
 	KINEMATIC
 };
 
+UENUM()
+enum class ForceType
+{
+	GRAVITY = 0,
+	NORMAL,
+	SLIDING,
+	FRICTION_STATIC,
+	FRICTION_KINETIC,
+	DRAG,
+	SPRING
+};
+
 UCLASS()
 class PHYSICS_ASSIGNMENTS_API AParticle2D : public AActor
 {
@@ -46,6 +58,10 @@ public:
 		float startMass;
 	UPROPERTY(EditAnywhere)
 		TickType particleTickType;
+	UPROPERTY(EditAnywhere)
+		ForceType particleForceType;
+	UPROPERTY(EditAnywhere)
+		bool simulate;
 
 	void SetMass(float newMass);
 	float GetMass();
@@ -62,5 +78,5 @@ private:
 
 	float mass, massInv;
 	FVector force;
-	FVector forceOfGravity;
+	FVector forceOfGravity, normalForceUp, normalForce45;
 };

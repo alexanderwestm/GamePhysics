@@ -70,7 +70,7 @@ FVector ForceGenerator::GenerateForce_drag(FVector particleVelocity, FVector flu
 {
 	// f_drag = (p * u^2 * area * coeff)/2
 	//return fluidDensity * sumVelocity^2 * objectArea * coeff
-	FVector sumVel = particleVelocity - fluidVelocity;
+	FVector sumVel = fluidVelocity - particleVelocity;
 	return (fluidDensity * sumVel * sumVel * objectArea_crossSection * objectDragCoefficient) * .5;
 }
 

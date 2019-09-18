@@ -20,6 +20,8 @@ void AParticle2D::BeginPlay()
 	position = GetActorLocation();
 	SetMass(startMass);
 	forceOfGravity = ForceGenerator::GenerateForce_gravity(FVector::UpVector, 9.81, mass);
+	normalForceUp = ForceGenerator::GenerateForce_normal(forceOfGravity, FVector::UpVector);
+	normalForce45 = ForceGenerator::GenerateForce_normal(forceOfGravity, FVector(1, 0, 1));
 }
 
 // Called every frame
@@ -27,44 +29,59 @@ void AParticle2D::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	SetActorLocation(position);
-	SetActorRotation(FRotator(rotation, 0, 0));
+	//https://www.khanacademy.org/science/ap-physics-1/ap-forces-newtons-laws/friction-ap/v/static-and-kinetic-friction-example
+	float dirtWoodStatFricCoeff = .6, dirtWoodKinFricCoeff = .55;
+	float cubeDragCoeff = 1.05, airFluidDensity = .001225;
 
-	if (particleTickType == TickType::EULER)
+	if (simulate)
 	{
-		UpdatePositionEulerExplicit(DeltaTime);
-		UpdateRotationEulerExplicit(DeltaTime);
+		SetActorLocation(position);
+		SetActorRotation(FRotator(rotation, 0, 0) + GetActorRotation());
+
+		if (particleTickType == TickType::EULER)
+		{
+			UpdatePositionEulerExplicit(DeltaTime);
+			UpdateRotationEulerExplicit(DeltaTime);
+		}
+		else if (particleTickType == TickType::KINEMATIC)
+		{
+			UpdatePositionKinematic(DeltaTime);
+			UpdateRotationKinematic(DeltaTime);
+		}
+
+		switch (particleForceType)
+		{
+		case ForceType::GRAVITY:
+			AddForce(forceOfGravity);
+			break;
+		case ForceType::NORMAL:
+			AddForce(forceOfGravity);
+			AddForce(normalForceUp);
+			break;
+		case ForceType::SLIDING:
+			AddForce(ForceGenerator::GenerateForce_sliding(forceOfGravity, normalForce45));
+			break;
+		case ForceType::FRICTION_STATIC:
+			AddForce(ForceGenerator::GenerateForce_sliding(forceOfGravity, normalForce45));
+			AddForce(ForceGenerator::GenerateForce_friction_static(normalForce45, FVector(10, 0, 0), dirtWoodStatFricCoeff));
+			break;
+		case ForceType::FRICTION_KINETIC:
+			AddForce(ForceGenerator::GenerateForce_sliding(forceOfGravity, normalForce45));
+			AddForce(ForceGenerator::GenerateForce_friction_kinetic(normalForce45, velocity, dirtWoodKinFricCoeff));
+			break;
+		case ForceType::DRAG:
+			AddForce(ForceGenerator::GenerateForce_drag(velocity, FVector(0, 0, 0), airFluidDensity, 1000, cubeDragCoeff));
+			break;
+		case ForceType::SPRING:
+			AddForce(ForceGenerator::GenerateForce_spring(position, FVector(1400, 0, 1000), 500, .2));
+			break;
+		default:
+			break;
+		}
+		UE_LOG(LogTemp, Warning, TEXT("Sum Force: %s"), *force.ToString());
+
+		UpdateAcceleration();
 	}
-	else if (particleTickType == TickType::KINEMATIC)
-	{
-		UpdatePositionKinematic(DeltaTime);
-		UpdateRotationKinematic(DeltaTime);
-	}
-
-	// TO DO: replace with surface normal instead of hard coded
-	FVector normalForce = ForceGenerator::GenerateForce_normal(forceOfGravity, FVector::UpVector);
-
-	//AddForce(forceOfGravity);
-
-	//AddForce(ForceGenerator::GenerateForce_sliding(forceOfGravity, normalForce));
-
-	//AddForce(FVector(1, 0, 0));
-	AddForce(ForceGenerator::GenerateForce_friction_static(normalForce, FVector(10, 0, 0), .5));
-	
-	//AddForce(FVector(10, 0, 0));
-	//AddForce(ForceGenerator::GenerateForce_friction_kinetic(normalForce, velocity, .5));
-
-	//AddForce(forceOfGravity);
-	//AddForce(normalForce);
-
-	//AddForce(FVector(.1, 0, 0));
-	//AddForce(ForceGenerator::GenerateForce_drag(velocity, FVector(0, 0, 0), 0.001225, 1.0, 1.05));
-
-	//AddForce(ForceGenerator::GenerateForce_spring(position, FVector(0, 0, 1000), 500, .2));
-
-	UE_LOG(LogTemp, Warning, TEXT("Sum Force: %s"), *force.ToString());
-
-	UpdateAcceleration();
 }
 
 void AParticle2D::UpdatePositionEulerExplicit(float dt)
