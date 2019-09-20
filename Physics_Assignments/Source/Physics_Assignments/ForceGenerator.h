@@ -7,13 +7,9 @@
 /**
  * 
  */
-class PHYSICS_ASSIGNMENTS_API ForceGenerator
+class PHYSICS_ASSIGNMENTS_API ForceGenerator abstract
 {
-public:
-	ForceGenerator();
-	~ForceGenerator();
-
-	
+public:	
 	static FVector GenerateForce_gravity(FVector worldUp, float gravitationalConstant, float particleMass);
 	static FVector GenerateForce_normal(FVector f_gravity, FVector surfaceNormal_unit);
 	static FVector GenerateForce_sliding(FVector f_gravity, FVector f_normal);

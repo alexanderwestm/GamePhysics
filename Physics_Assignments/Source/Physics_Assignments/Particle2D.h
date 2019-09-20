@@ -16,13 +16,23 @@ enum class TickType
 UENUM()
 enum class ForceType
 {
-	GRAVITY = 0,
+	NONE = -1,
+	GRAVITY,
 	NORMAL,
 	SLIDING,
 	FRICTION_STATIC,
 	FRICTION_KINETIC,
 	DRAG,
 	SPRING
+};
+
+UENUM()
+enum class InertiaBody
+{
+	NONE = -1,
+	CIRCLE,
+	RECTANGLE,
+	WASHER
 };
 
 UCLASS()
@@ -61,10 +71,16 @@ public:
 	UPROPERTY(EditAnywhere)
 		ForceType particleForceType;
 	UPROPERTY(EditAnywhere)
+		InertiaBody inertiaBody;
+	UPROPERTY(EditAnywhere)
 		bool simulate;
+	UPROPERTY(EditAnywhere)
+		FVector testForce;
 
 	void SetMass(float newMass);
 	float GetMass();
+
+	void SetMomentOfInertia(InertiaBody body);
 
 	void AddForce(FVector newForce);
 private:
@@ -78,5 +94,7 @@ private:
 
 	float mass, massInv;
 	FVector force;
-	FVector forceOfGravity, normalForceUp, normalForce45;
+	FVector forceOfGravity, normalForceUp, normalForce45, normalForceLeft;
+
+	float inertia;
 };

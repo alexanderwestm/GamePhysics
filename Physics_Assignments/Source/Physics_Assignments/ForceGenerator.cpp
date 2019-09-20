@@ -4,14 +4,6 @@
 #include "ForceGenerator.h"
 #include "GenericPlatformMath.h"
 
-ForceGenerator::ForceGenerator()
-{
-}
-
-ForceGenerator::~ForceGenerator()
-{
-}
-
 // works
 FVector ForceGenerator::GenerateForce_gravity(FVector worldUp, float gravitationalConstant, float particleMass)
 {
@@ -50,9 +42,7 @@ FVector ForceGenerator::GenerateForce_friction_static(FVector f_normal, FVector 
 	}
 	else
 	{
-		// am I supposed to rotate this 90 degrees?
-		// friction is always perpendicular to normal
-		return -frictionCoefficient_static * f_normal;
+		return -max * f_opposing / f_opposing.Size();
 	}
 }
 
@@ -61,9 +51,9 @@ FVector ForceGenerator::GenerateForce_friction_kinetic(FVector f_normal, FVector
 
 	// f_friction_k = -coeff*|f_normal| * unit(vel)
 	//FVector absNormal = FVector(Math.Abs(f_normal.X), f_normal.Y, f_normal.Z);
-
-	// same thing here, this is supposed to be rotated isn't it?
-	return -frictionCoefficient_kinetic * f_normal.GetAbs() * particleVelocity.Normalize();
+	FVector normalizeVelocity  = particleVelocity;
+	normalizeVelocity.Normalize();
+	return -frictionCoefficient_kinetic * f_normal.Size() * normalizeVelocity;
 }
 
 FVector ForceGenerator::GenerateForce_drag(FVector particleVelocity, FVector fluidVelocity, float fluidDensity, float objectArea_crossSection, float objectDragCoefficient)
@@ -71,7 +61,7 @@ FVector ForceGenerator::GenerateForce_drag(FVector particleVelocity, FVector flu
 	// f_drag = (p * u^2 * area * coeff)/2
 	//return fluidDensity * sumVelocity^2 * objectArea * coeff
 	FVector sumVel = fluidVelocity - particleVelocity;
-	return (fluidDensity * sumVel * sumVel * objectArea_crossSection * objectDragCoefficient) * .5;
+	return (fluidDensity * sumVel.Size() * sumVel * objectArea_crossSection * objectDragCoefficient) * .5;
 }
 
 FVector ForceGenerator::GenerateForce_spring(FVector particlePosition, FVector anchorPosition, float springRestingLength, float springStiffnessCoefficient)
@@ -79,6 +69,5 @@ FVector ForceGenerator::GenerateForce_spring(FVector particlePosition, FVector a
 	// f_spring = -coeff*(spring length - spring resting length)
 	FVector forceDir = particlePosition - anchorPosition;
 	float springLength = forceDir.Size();
-	forceDir.Normalize();
-	return springStiffnessCoefficient * (springRestingLength - springLength) * forceDir;
+	return springStiffnessCoefficient * (springRestingLength - springLength) * forceDir / springLength;
 }

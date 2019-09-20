@@ -19,9 +19,11 @@ void AParticle2D::BeginPlay()
 	Super::BeginPlay();
 	position = GetActorLocation();
 	SetMass(startMass);
+	//SetMomentOfInertia(inertiaBody);
 	forceOfGravity = ForceGenerator::GenerateForce_gravity(FVector::UpVector, 9.81, mass);
 	normalForceUp = ForceGenerator::GenerateForce_normal(forceOfGravity, FVector::UpVector);
 	normalForce45 = ForceGenerator::GenerateForce_normal(forceOfGravity, FVector(1, 0, 1));
+	normalForceLeft = ForceGenerator::GenerateForce_normal(forceOfGravity, FVector(1, 0, 0));
 }
 
 // Called every frame
@@ -62,15 +64,18 @@ void AParticle2D::Tick(float DeltaTime)
 			AddForce(ForceGenerator::GenerateForce_sliding(forceOfGravity, normalForce45));
 			break;
 		case ForceType::FRICTION_STATIC:
-			AddForce(ForceGenerator::GenerateForce_sliding(forceOfGravity, normalForce45));
-			AddForce(ForceGenerator::GenerateForce_friction_static(normalForce45, FVector(10, 0, 0), dirtWoodStatFricCoeff));
+			//AddForce(ForceGenerator::GenerateForce_sliding(forceOfGravity, normalForce45));
+			AddForce(testForce);
+			AddForce(ForceGenerator::GenerateForce_friction_static(normalForceLeft, force, dirtWoodStatFricCoeff));
 			break;
 		case ForceType::FRICTION_KINETIC:
-			AddForce(ForceGenerator::GenerateForce_sliding(forceOfGravity, normalForce45));
-			AddForce(ForceGenerator::GenerateForce_friction_kinetic(normalForce45, velocity, dirtWoodKinFricCoeff));
+			//AddForce(ForceGenerator::GenerateForce_sliding(forceOfGravity, normalForce45));
+			AddForce(testForce);
+			AddForce(ForceGenerator::GenerateForce_friction_kinetic(normalForceUp, velocity, dirtWoodKinFricCoeff));
 			break;
 		case ForceType::DRAG:
-			AddForce(ForceGenerator::GenerateForce_drag(velocity, FVector(0, 0, 0), airFluidDensity, 1000, cubeDragCoeff));
+			AddForce(forceOfGravity);
+			AddForce(ForceGenerator::GenerateForce_drag(velocity, FVector(0, 0, 0), airFluidDensity, 1, cubeDragCoeff));
 			break;
 		case ForceType::SPRING:
 			AddForce(ForceGenerator::GenerateForce_spring(position, FVector(1400, 0, 1000), 500, .2));
@@ -78,7 +83,7 @@ void AParticle2D::Tick(float DeltaTime)
 		default:
 			break;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("Sum Force: %s"), *force.ToString());
+		//UE_LOG(LogTemp, Warning, TEXT("Sum Force: %s"), *force.ToString());
 
 		UpdateAcceleration();
 	}
@@ -120,6 +125,29 @@ void AParticle2D::SetMass(float newMass)
 float AParticle2D::GetMass()
 {
 	return mass;
+}
+
+void AParticle2D::SetMomentOfInertia(InertiaBody body)
+{
+//	UE_LOG(LogTemp, Warning, TEXT("Size: %s"), *GetActorScale3D().ToString());
+//	FVector actorSize = GetActorScale3D();
+//	switch (body)
+//	{
+//	case InertiaBody::NONE:
+//		inertia = 0.0;
+//		break;
+//	case InertiaBody::CIRCLE:
+//		float radius = actorSize.X;
+//		inertia = .5 * mass * radius * radius;
+//		break;
+//	case InertiaBody::RECTANGLE:
+//		float dx = actorSize.X, dz = actorSize.Z;
+//		inertia = 1 / 12 * mass * (dx * dx + dz * dz);
+//		break;
+//	case InertiaBody::WASHER:
+//		inertia = 0.0;
+//		break;
+//	}
 }
 
 void AParticle2D::AddForce(FVector newForce)
