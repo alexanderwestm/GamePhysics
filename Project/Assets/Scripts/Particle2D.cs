@@ -183,6 +183,7 @@ public class Particle2D : MonoBehaviour
 
     public void AddTorque(Vector2 force, Vector2 pointApplied)
     {
+        // Formula: https://forum.unity.com/threads/how-to-calculate-how-much-torque-will-rigidbody-addforceatposition-add.287164/#post-1927110
         Vector2 relativePoint = centerOfMassGlobal - pointApplied;
         float angle = Mathf.Atan2(relativePoint.y, relativePoint.x) - Mathf.Atan2(force.y, force.y);
         float torqueToApply = relativePoint.magnitude * force.magnitude * Mathf.Sin(angle) * Mathf.Rad2Deg;
