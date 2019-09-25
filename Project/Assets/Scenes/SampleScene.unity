@@ -332,7 +332,7 @@ MonoBehaviour:
   angularVelocity: 0
   angularAcceleration: 0
   startMass: 1
-  inertiaBody: 1
+  inertiaBody: 0
   totalTorque: 0
   updateType: 1
   forceType: 7
