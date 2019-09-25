@@ -19,30 +19,47 @@ public class Particle2D : MonoBehaviour
         FRICTION_STATIC,
         FRICTION_KINETIC,
         DRAG,
-        SPRING
+        SPRING,
+        TORQUE
+    }
+
+    enum InertiaBody
+    {
+        NONE = -1,
+        CIRCLE,
+        RECTANGLE
     }
 
     public Vector2 position { get; private set; }
-    [SerializeField] Vector2 velocity;
-    [SerializeField] Vector2 acceleration;
-    [SerializeField] float rotation;
-    [SerializeField] float angularVelocity;
-    [SerializeField] float angularAcceleration;
+    [SerializeField] Vector2 velocity = Vector2.zero;
+    [SerializeField] Vector2 acceleration = Vector2.zero;
+    [SerializeField] float rotation = 0.0f;
+    [SerializeField] float angularVelocity = 0.0f;
+    [SerializeField] float angularAcceleration = 0.0f;
     [SerializeField] float startMass;
+    [SerializeField] InertiaBody inertiaBody;
+    [SerializeField] float totalTorque = 0.0f;
     [SerializeField] UpdateType updateType;
     [SerializeField] ForceType forceType;
-    [SerializeField] bool simulate;
+    [SerializeField] bool simulate = false;
+
 
     private float mass, massInv;
-    private Vector2 totalForce;
+    private Vector2 totalForce = Vector2.zero;
     private Vector2 forceOfGravity, normalForceUp, normalForce45, normalForceLeft;
-
+    private float inertia, inertiaInv;
+    private Vector2 centerOfMassLocal, centerOfMassGlobal;
 
     // Start is called before the first frame update
     void Start()
     {
         position = transform.position;
         SetMass(startMass);
+        SetMomentOfInertia(inertiaBody);
+        Vector3 hitboxSize = gameObject.GetComponent<BoxCollider>().bounds.size;
+        centerOfMassLocal = new Vector2(hitboxSize.x / 2f, hitboxSize.y / 2f);
+        centerOfMassGlobal = transform.position;
+
         forceOfGravity = ForceGenerator.GenerateForce_gravity(Vector2.up, 9.81f, mass);
         normalForceUp = ForceGenerator.GenerateForce_normal(forceOfGravity, Vector2.up);
         normalForce45 = ForceGenerator.GenerateForce_normal(forceOfGravity, new Vector2(1, 1));
@@ -55,6 +72,7 @@ public class Particle2D : MonoBehaviour
         //https://www.khanacademy.org/science/ap-physics-1/ap-forces-newtons-laws/friction-ap/v/static-and-kinetic-friction-example
         float dirtWoodStatFricCoeff = .6f, dirtWoodKinFricCoeff = .55f;
         float cubeDragCoeff = 1.05f, airFluidDensity = .001225f;
+
         if (simulate)
         {
             transform.position = position;
@@ -91,26 +109,60 @@ public class Particle2D : MonoBehaviour
                 }
                 case ForceType.SLIDING:
                 {
+                    AddForce(ForceGenerator.GenerateForce_sliding(forceOfGravity, normalForce45));
                     break;
                 }
                 case ForceType.FRICTION_STATIC:
                 {
+                    AddForce(ForceGenerator.GenerateForce_friction_static(normalForceLeft, forceOfGravity, dirtWoodStatFricCoeff));
                     break;
                 }
                 case ForceType.FRICTION_KINETIC:
                 {
+                    AddForce(ForceGenerator.GenerateForce_friction_kinetic(normalForceUp, velocity, dirtWoodKinFricCoeff));
                     break;
                 }
                 case ForceType.DRAG:
                 {
+                    AddForce(forceOfGravity);
+                    AddForce(ForceGenerator.GenerateForce_drag(velocity, new Vector2(0, 0), airFluidDensity, 1, cubeDragCoeff));
                     break;
                 }
                 case ForceType.SPRING:
                 {
+                    AddForce(ForceGenerator.GenerateForce_spring(position, new Vector2(0, 100), 5, .2f));
+                    break;
+                }
+                case ForceType.TORQUE:
+                {
+                    AddTorque(new Vector2(1000, 0), transform.position + new Vector3(.9f, 0, 0));
                     break;
                 }
             }
+            UpdateAcceleration();
+            UpdateAngularAcceleration();
         }
+    }
+
+    private void SetMomentOfInertia(InertiaBody body)
+    {
+        Vector3 hitboxSize = gameObject.GetComponent<BoxCollider>().bounds.size;
+        switch(body)
+        {
+            case InertiaBody.RECTANGLE:
+            {
+                float dx = hitboxSize.x, dy = hitboxSize.y;
+                inertia = 1f / 12f * mass * (dx * dx + dy * dy);
+                break;
+            }
+            case InertiaBody.CIRCLE:
+            {
+                float radius = hitboxSize.x;
+                inertia = .5f * mass * radius * radius;
+                break;
+            }
+        }
+        inertiaInv = 1 / inertia;
     }
 
     public void SetMass(float newMass)
@@ -127,6 +179,14 @@ public class Particle2D : MonoBehaviour
     public void AddForce(Vector2 force)
     {
         totalForce += force;
+    }
+
+    public void AddTorque(Vector2 force, Vector2 pointApplied)
+    {
+        Vector2 relativePoint = centerOfMassGlobal - pointApplied;
+        float angle = Mathf.Atan2(relativePoint.y, relativePoint.x) - Mathf.Atan2(force.y, force.y);
+        float torqueToApply = relativePoint.magnitude * force.magnitude * Mathf.Sin(angle) * Mathf.Rad2Deg;
+        totalTorque += torqueToApply;
     }
 
     private void UpdatePositionEulerExplicit(float dt)
@@ -157,5 +217,10 @@ public class Particle2D : MonoBehaviour
     {
         acceleration = massInv * totalForce;
         totalForce = Vector2.zero;
+    }
+
+    private void UpdateAngularAcceleration()
+    {
+        angularAcceleration = totalTorque * inertiaInv;
     }
 }
