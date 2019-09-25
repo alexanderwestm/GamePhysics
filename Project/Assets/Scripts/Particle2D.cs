@@ -67,7 +67,7 @@ public class Particle2D : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         //https://www.khanacademy.org/science/ap-physics-1/ap-forces-newtons-laws/friction-ap/v/static-and-kinetic-friction-example
         float dirtWoodStatFricCoeff = .6f, dirtWoodKinFricCoeff = .55f;
