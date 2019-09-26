@@ -21,18 +21,32 @@ public abstract class CollisionHull2D : MonoBehaviour
         type = type;
     }
 
-    public bool TestCollision(CollisionHull2D a, CollisionHull2D b)
-    {
-        return false;
-    }
-
     private void Start()
     {
         particle = GetComponent<Particle2D>();
     }
 
-    private void Update()
+    public bool TestCollision(CollisionHull2D other)
     {
-        
+        switch (other.type)
+        {
+            case CollisionHullType2D.CIRCLE:
+            {
+                return TestCollisionVsCircle((Circle)other);
+            }
+            case CollisionHullType2D.AABB:
+            {
+                return TestCollisionVsAABB((AABB)other);
+            }
+            case CollisionHullType2D.OBB:
+            {
+                return TestCollisionVsOBB((OBB)other);
+            }
+        }
+        return false;
     }
+
+    protected abstract bool TestCollisionVsCircle(Circle other);
+    protected abstract bool TestCollisionVsAABB(AABB other);
+    protected abstract bool TestCollisionVsOBB(OBB other);
 }
