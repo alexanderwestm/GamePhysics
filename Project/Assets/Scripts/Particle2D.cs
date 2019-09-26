@@ -27,7 +27,10 @@ public class Particle2D : MonoBehaviour
     {
         NONE = -1,
         CIRCLE,
-        RECTANGLE
+        RECTANGLE,
+        ROD,
+        CIRCULAR_RING,
+        SQUARE
     }
 
     public Vector2 position { get; private set; }
@@ -135,7 +138,7 @@ public class Particle2D : MonoBehaviour
                 }
                 case ForceType.TORQUE:
                 {
-                    AddTorque(new Vector2(1000, 0), transform.position + new Vector3(.9f, 0, 0));
+                    AddTorque(new Vector2(1, 1), transform.position + new Vector3(.9f, 0, 0));
                     break;
                 }
             }
@@ -161,6 +164,29 @@ public class Particle2D : MonoBehaviour
                 inertia = .5f * mass * radius * radius;
                 break;
             }
+            case InertiaBody.ROD:
+            {
+                float length = hitboxSize.x;
+                inertia = 1 / 12f * mass * length * length;
+                break;
+            }
+            case InertiaBody.CIRCULAR_RING:
+            {
+                float outerRadius = hitboxSize.x;
+                float innerRadius = outerRadius * .75f;
+                float t = outerRadius - innerRadius;
+                float r = t / 2;
+
+                inertia = Mathf.PI * r * r * r * t;
+
+                break;
+            }
+            case InertiaBody.SQUARE:
+            {
+                float dim = hitboxSize.x;
+                inertia = (1f / 3f) * mass * dim * dim;
+                break;
+            }
         }
         inertiaInv = 1 / inertia;
     }
@@ -184,9 +210,10 @@ public class Particle2D : MonoBehaviour
     public void AddTorque(Vector2 force, Vector2 pointApplied)
     {
         // Formula: https://forum.unity.com/threads/how-to-calculate-how-much-torque-will-rigidbody-addforceatposition-add.287164/#post-1927110
-        Vector2 relativePoint = centerOfMassGlobal - pointApplied;
-        float angle = Mathf.Atan2(relativePoint.y, relativePoint.x) - Mathf.Atan2(force.y, force.y);
-        float torqueToApply = relativePoint.magnitude * force.magnitude * Mathf.Sin(angle) * Mathf.Rad2Deg;
+        Vector2 relativePoint = pointApplied - centerOfMassGlobal;
+        float torqueToApply = relativePoint.x * force.y - relativePoint.y * force.x;
+        //float angle = Mathf.Atan2(relativePoint.y, relativePoint.x) - Mathf.Atan2(force.y, force.y);
+        //float torqueToApply = relativePoint.magnitude * force.magnitude * Mathf.Sin(angle) * Mathf.Rad2Deg;
         totalTorque += torqueToApply;
     }
 
@@ -223,5 +250,6 @@ public class Particle2D : MonoBehaviour
     private void UpdateAngularAcceleration()
     {
         angularAcceleration = totalTorque * inertiaInv;
+        totalTorque = 0;
     }
 }
