@@ -5,13 +5,10 @@ using UnityEngine;
 [System.Serializable]
 public class OBB : CollisionHull2D
 {
-    [SerializeField] Vector2[] axis = new Vector2[2];
-
     public Vector2 halfWidths;
 
-    public OBB(Vector2[] axis, Vector2 halfWidths):base(CollisionHullType2D.OBB)
+    public OBB( Vector2 halfWidths):base(CollisionHullType2D.OBB)
     {
-        this.axis = axis;
         this.halfWidths = halfWidths;
     }
 
@@ -48,14 +45,27 @@ public class OBB : CollisionHull2D
         // find max extents of OBB, do AABB vs this box
         // then, transform this box into OBB's space, find max extents, repeat
 
-        Vector2 obbAsAABBMinExt = particle.position - halfWidths, obbAsAABBMaxExt = particle.position + halfWidths;
-        Vector2 aabbMinExt = other.particle.position - other.halfWidths, aabbMaxExt = other.particle.position + other.halfWidths;
-        Vector2 aabbAsOBBPos = transform.InverseTransformPoint(other.particle.position);
-        Vector2 aabbAsOBBMinExt = transform.InverseTransformPoint(aabbMinExt);
-        Vector2 aabbAsOBBMaxExt = transform.InverseTransformPoint(aabbMaxExt);
+        Vector2 bottomLeft, bottomRight, topLeft, topRight;
 
-        Vector2 obbMinExt = transform.InverseTransformPoint(obbAsAABBMinExt);
-        Vector2 obbMaxExt = transform.InverseTransformPoint(obbAsAABBMaxExt);
+        bottomLeft = transform.InverseTransformPoint(particle.position - halfWidths);
+        bottomRight = transform.InverseTransformPoint(particle.position + new Vector2(halfWidths.x, -halfWidths.y));
+        topLeft = transform.InverseTransformPoint(particle.position + new Vector2(-halfWidths.x, halfWidths.y));
+        topRight = transform.InverseTransformPoint(particle.position + halfWidths);
+
+        Vector2 obbAsAABBMinExt = new Vector2(Mathf.Min(bottomLeft.x, Mathf.Min(bottomRight.x, Mathf.Min(topLeft.x, topRight.x))),
+                                Mathf.Min(bottomLeft.y, Mathf.Min(bottomRight.y, Mathf.Min(topLeft.y, topRight.y)))) + particle.position, 
+                obbAsAABBMaxExt = new Vector2(Mathf.Max(bottomLeft.x, Mathf.Max(bottomRight.x, Mathf.Max(topLeft.x, topRight.x))),
+                                Mathf.Max(bottomLeft.y, Mathf.Max(bottomRight.y, Mathf.Max(topLeft.y, topRight.y)))) + particle.position;
+
+        Vector2 obbMinExt = particle.position + (Vector2)transform.InverseTransformPoint(particle.position - halfWidths);
+        Vector2 obbMaxExt = particle.position + (Vector2)transform.InverseTransformPoint(particle.position + halfWidths);
+
+        Vector2 aabbMinExt = other.particle.position - other.halfWidths, aabbMaxExt = other.particle.position + other.halfWidths;
+
+        Vector2 aabbAsOBBMinExt = particle.position + (Vector2)transform.InverseTransformPoint(aabbMinExt);
+        Vector2 aabbAsOBBMaxExt = particle.position + (Vector2)transform.InverseTransformPoint(aabbMaxExt);
+
+
 
         bool firstCheck = (obbAsAABBMaxExt.x >= aabbMinExt.x && obbAsAABBMaxExt.y >= aabbMinExt.y) &&
                             (aabbMaxExt.x >= obbAsAABBMinExt.x && aabbMaxExt.y >= obbAsAABBMinExt.y);
