@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Circle : CollisionHull2D
 {
     public float radius;
@@ -22,20 +23,36 @@ public class Circle : CollisionHull2D
         // find closest point to the circle on the box: clamp the (center - min) and (center - max)
         // circle point collision test using closest point
 
-        float xPart = Mathf.Clamp(particle.position.x, other.minBounds.x, other.maxBounds.x);
-        float yPart = Mathf.Clamp(particle.position.y, other.minBounds.y, other.maxBounds.y);
+        Vector2 point, otherMin, otherMax, delta;
+        otherMin = other.particle.position - other.halfWidths;
+        otherMax = other.particle.position + other.halfWidths;
 
-        float deltaX = particle.position.x - xPart;
-        float deltaY = particle.position.y - yPart;
+        // find the closest point on the aabb
+        point.x = Mathf.Clamp(particle.position.x, otherMin.x, otherMax.x);
+        point.y = Mathf.Clamp(particle.position.y, otherMin.y, otherMax.y);
 
-        Vector2 deltaVector = new Vector2(deltaX, deltaY);
-        return deltaVector.sqrMagnitude < radius * radius;
+        delta = particle.position - point;
+
+        // point collision with circle test
+        return delta.sqrMagnitude < radius * radius;
     }
 
     protected override bool TestCollisionVsOBB(OBB other)
     {
         // same as aabb
         // multiply circle center by box world matrix inverse
-        return false;
+        //other.transform.worldToLocalMatrix
+        Vector2 minExtents = other.particle.position - other.halfWidths, maxExtents = other.particle.position + other.halfWidths;
+        Vector2 adjustedCenter = other.transform.InverseTransformPoint(particle.position);
+        adjustedCenter += other.particle.position;
+
+        Vector2 closestPoint;
+
+        closestPoint.x = Mathf.Clamp(adjustedCenter.x, minExtents.x, maxExtents.x);
+        closestPoint.y = Mathf.Clamp(adjustedCenter.y, minExtents.y, maxExtents.y);
+
+        Vector2 delta = adjustedCenter - closestPoint;
+
+        return delta.sqrMagnitude < radius * radius;
     }
 }

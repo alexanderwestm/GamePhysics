@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Particle2D : MonoBehaviour
 {
-    enum UpdateType
+    public enum UpdateType
     {
         EULER = 0,
         KINEMATIC
     }
 
-    enum ForceType
+    public enum ForceType
     {
         NONE = -1,
         GRAVITY,
@@ -23,7 +24,7 @@ public class Particle2D : MonoBehaviour
         TORQUE
     }
 
-    enum InertiaBody
+    public enum InertiaBody
     {
         NONE = -1,
         CIRCLE,
@@ -33,25 +34,31 @@ public class Particle2D : MonoBehaviour
         SQUARE
     }
 
-    public Vector2 position { get; private set; }
-    [SerializeField] Vector2 velocity = Vector2.zero;
-    [SerializeField] Vector2 acceleration = Vector2.zero;
-    [SerializeField] float rotation = 0.0f;
-    [SerializeField] float angularVelocity = 0.0f;
-    [SerializeField] float angularAcceleration = 0.0f;
-    [SerializeField] float startMass;
-    [SerializeField] InertiaBody inertiaBody;
-    [SerializeField] float totalTorque = 0.0f;
-    [SerializeField] UpdateType updateType;
-    [SerializeField] ForceType forceType;
-    [SerializeField] bool simulate = false;
+    public Vector2 position;
+    [SerializeField] private Vector2 velocity = Vector2.zero;
+    [SerializeField] private Vector2 acceleration = Vector2.zero;
+    [SerializeField] private float rotation = 0.0f;
+    [SerializeField] private float angularVelocity = 0.0f;
+    [SerializeField] private float angularAcceleration = 0.0f;
+    [SerializeField] private float startMass;
+    [SerializeField] private InertiaBody inertiaBody;
+    [SerializeField] private float totalTorque = 0.0f;
+    [SerializeField] private UpdateType updateType;
+    [SerializeField] private ForceType forceType;
+    [SerializeField] private bool simulate = false;
 
 
-    private float mass, massInv;
-    private Vector2 totalForce = Vector2.zero;
-    private Vector2 forceOfGravity, normalForceUp, normalForce45, normalForceLeft;
-    private float inertia, inertiaInv;
-    private Vector2 centerOfMassLocal, centerOfMassGlobal;
+    [HideInInspector] private float mass;
+    [HideInInspector] private float massInv;
+    [HideInInspector] private Vector2 totalForce = Vector2.zero;
+    [HideInInspector] private Vector2 forceOfGravity;
+    [HideInInspector] private Vector2 normalForceUp;
+    [HideInInspector] private Vector2 normalForce45;
+    [HideInInspector] private Vector2 normalForceLeft;
+    [HideInInspector] private float inertia;
+    [HideInInspector] private float inertiaInv;
+    [HideInInspector] private Vector2 centerOfMassLocal;
+    [HideInInspector] private Vector2 centerOfMassGlobal;
 
     // Start is called before the first frame update
     void Start()
@@ -97,7 +104,7 @@ public class Particle2D : MonoBehaviour
                 }
             }
 
-            switch(forceType)
+            switch (forceType)
             {
                 case ForceType.GRAVITY:
                 {
@@ -145,6 +152,8 @@ public class Particle2D : MonoBehaviour
             UpdateAcceleration();
             UpdateAngularAcceleration();
         }
+        else
+            position = transform.position;
     }
 
     private void SetMomentOfInertia(InertiaBody body)

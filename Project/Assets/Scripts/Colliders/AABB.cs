@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class AABB : CollisionHull2D
 {
-    public Vector2 minBounds { get; private set; }
-    public Vector2 maxBounds { get; private set; }
+    public Vector2 halfWidths;
 
-    public AABB(Vector2 min, Vector2 max) : base(CollisionHullType2D.AABB)
+    public AABB(Vector2 halfWidths) : base(CollisionHullType2D.AABB)
     {
-        minBounds = min;
-        maxBounds = max;
+        this.halfWidths = halfWidths;
     }
 
     protected override bool TestCollisionVsCircle(Circle other)
@@ -21,15 +20,19 @@ public class AABB : CollisionHull2D
 
     protected override bool TestCollisionVsAABB(AABB other)
     {
-        // if for all axes, max entent of A is greater than mix extent of B
-        // 1. max-min compare: maxBounds > other.minBounds
-        // 2. min-max compare: minBounds < other.maxBounds
-        // 3. max && min-max
+        // if distance between centers is greater than half widths they're not colliding
+        // component wise check
+        // 1. store abs(distance) on x, y
+        // 2. store width on x, y
+        // 3. return if distance is less than width
 
-        bool max_min, min_max;
-        max_min = maxBounds.x > other.minBounds.x && maxBounds.y > other.minBounds.y;
-        min_max = minBounds.x < other.maxBounds.x && minBounds.y < other.maxBounds.y;
-        return max_min && min_max;
+        Vector2 ourCenter = particle.position, otherCenter = other.particle.position;
+        Vector2 dist = ourCenter - otherCenter;
+        dist.x = Mathf.Abs(dist.x);
+        dist.y = Mathf.Abs(dist.y);
+
+        Vector2 sumHalfWidths = halfWidths + other.halfWidths;
+        return dist.x < sumHalfWidths.x && dist.y < sumHalfWidths.y;
     }
 
     protected override bool TestCollisionVsOBB(OBB other)

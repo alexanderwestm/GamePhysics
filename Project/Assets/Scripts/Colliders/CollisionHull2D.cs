@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public abstract class CollisionHull2D : MonoBehaviour
 {
     public enum CollisionHullType2D
@@ -13,12 +14,12 @@ public abstract class CollisionHull2D : MonoBehaviour
         NUM_TYPES
     }
 
-    public CollisionHullType2D type { get; protected set; }
-    protected Particle2D particle { get; set; }
+    public CollisionHullType2D type;
+    public Particle2D particle;
 
     protected CollisionHull2D(CollisionHullType2D collisionType)
     {
-        type = type;
+        this.type = collisionType;
     }
 
     private void Start()
