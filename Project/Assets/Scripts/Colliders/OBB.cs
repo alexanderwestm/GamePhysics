@@ -44,6 +44,13 @@ public class OBB : CollisionHull2D
         // same as aabb aabb twice
         // find max extents of OBB, do AABB vs this box
         // then, transform this box into OBB's space, find max extents, repeat
+        // 1. get min max extents of rotated  obb
+        // 2. get min max extents of aabb
+        // 3. get min max extents of rotated aabb
+        // 4. get min max extents of obb
+        // 5. do aabb check between 1/2
+        // 6. do aabb check between 3/4
+        // 7. if either fails they collide
 
         Vector2 bottomLeft, bottomRight, topLeft, topRight;
 
@@ -53,39 +60,45 @@ public class OBB : CollisionHull2D
         topRight = transform.InverseTransformPoint(particle.position + halfWidths);
 
         Vector2 obbAsAABBMinExt = new Vector2(Mathf.Min(bottomLeft.x, Mathf.Min(bottomRight.x, Mathf.Min(topLeft.x, topRight.x))),
-                                Mathf.Min(bottomLeft.y, Mathf.Min(bottomRight.y, Mathf.Min(topLeft.y, topRight.y)))) + particle.position, 
+                                Mathf.Min(bottomLeft.y, Mathf.Min(bottomRight.y, Mathf.Min(topLeft.y, topRight.y)))), 
                 obbAsAABBMaxExt = new Vector2(Mathf.Max(bottomLeft.x, Mathf.Max(bottomRight.x, Mathf.Max(topLeft.x, topRight.x))),
-                                Mathf.Max(bottomLeft.y, Mathf.Max(bottomRight.y, Mathf.Max(topLeft.y, topRight.y)))) + particle.position;
+                                Mathf.Max(bottomLeft.y, Mathf.Max(bottomRight.y, Mathf.Max(topLeft.y, topRight.y))));
 
-        Vector2 obbMinExt = particle.position + (Vector2)transform.InverseTransformPoint(particle.position - halfWidths);
-        Vector2 obbMaxExt = particle.position + (Vector2)transform.InverseTransformPoint(particle.position + halfWidths);
+        Vector2 obbMinExt = -halfWidths;
+        Vector2 obbMaxExt = halfWidths;
 
-        Vector2 aabbMinExt = other.particle.position - other.halfWidths, aabbMaxExt = other.particle.position + other.halfWidths;
+        Vector2 aabbMinExt = -other.halfWidths, aabbMaxExt = other.halfWidths;
 
         Vector2 aabbAsOBBMinExt = particle.position + (Vector2)transform.InverseTransformPoint(aabbMinExt);
         Vector2 aabbAsOBBMaxExt = particle.position + (Vector2)transform.InverseTransformPoint(aabbMaxExt);
 
+        bottomLeft = transform.InverseTransformPoint(other.particle.position - other.halfWidths);
+        bottomRight = transform.InverseTransformPoint(other.particle.position + new Vector2(other.halfWidths.x, -other.halfWidths.y));
+        topLeft = transform.InverseTransformPoint(other.particle.position + new Vector2(-other.halfWidths.x, other.halfWidths.y));
+        topRight = transform.InverseTransformPoint(other.particle.position + other.halfWidths);
 
+        aabbAsOBBMinExt = new Vector2(Mathf.Min(bottomLeft.x, Mathf.Min(bottomRight.x, Mathf.Min(topLeft.x, topRight.x))),
+                                Mathf.Min(bottomLeft.y, Mathf.Min(bottomRight.y, Mathf.Min(topLeft.y, topRight.y))));
+        aabbAsOBBMaxExt = new Vector2(Mathf.Max(bottomLeft.x, Mathf.Max(bottomRight.x, Mathf.Max(topLeft.x, topRight.x))),
+                                Mathf.Max(bottomLeft.y, Mathf.Max(bottomRight.y, Mathf.Max(topLeft.y, topRight.y))));
 
+        // this one is right
         bool firstCheck = (obbAsAABBMaxExt.x >= aabbMinExt.x && obbAsAABBMaxExt.y >= aabbMinExt.y) &&
                             (aabbMaxExt.x >= obbAsAABBMinExt.x && aabbMaxExt.y >= obbAsAABBMinExt.y);
 
         bool secondCheck = (aabbAsOBBMaxExt.x >= obbMinExt.x && aabbAsOBBMaxExt.y >= obbMinExt.y) &&
                             (obbMaxExt.x >= aabbAsOBBMinExt.x && obbMaxExt.y >= aabbAsOBBMinExt.y);
 
-        obbMin = obbAsAABBMinExt;
-        obbMax = obbAsAABBMaxExt;
-        aabbMin = aabbMinExt;
-        aabbMax = aabbMaxExt;
-        obbAABBMin = obbMinExt;
-        obbAABBMax = obbMaxExt;
-        aabbOBBMin = aabbAsOBBMinExt;
-        aabbOBBMax = aabbAsOBBMaxExt;
-
         return firstCheck && secondCheck;
     }
     protected override bool TestCollisionVsOBB(OBB other)
     {
+        // 1. get corner points of obb and other obb
+        // 2. project other corner points onto axis[0]
+        // 3. store min and max points (on line) for this and other
+        // 4. do aabb between these points (if aabb says no collision then they're not colliding, this is for any axis)
+        // 5. repeat 1-4 for axis[1]
+        // 6. repeat 1-5 for other
         return false;
     }
 
