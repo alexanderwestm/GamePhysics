@@ -15,7 +15,19 @@ public class AABB : CollisionHull2D
     protected override bool TestCollisionVsCircle(Circle other)
     {
         // see circle
-        return false;
+
+        Vector2 point, otherMin, otherMax, delta;
+        otherMin = particle.position - halfWidths;
+        otherMax = particle.position + halfWidths;
+
+        // find the closest point on the aabb
+        point.x = Mathf.Clamp(other.particle.position.x, otherMin.x, otherMax.x);
+        point.y = Mathf.Clamp(other.particle.position.y, otherMin.y, otherMax.y);
+
+        delta = particle.position - point;
+
+        // point collision with circle test
+        return delta.sqrMagnitude < other.radius * other.radius;
     }
 
     protected override bool TestCollisionVsAABB(AABB other)

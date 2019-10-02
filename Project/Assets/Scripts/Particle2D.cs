@@ -37,7 +37,7 @@ public class Particle2D : MonoBehaviour
     public Vector2 position;
     [SerializeField] private Vector2 velocity = Vector2.zero;
     [SerializeField] private Vector2 acceleration = Vector2.zero;
-    [SerializeField] private float rotation = 0.0f;
+    public float rotation = 0.0f;
     [SerializeField] private float angularVelocity = 0.0f;
     [SerializeField] private float angularAcceleration = 0.0f;
     [SerializeField] private float startMass;
@@ -153,7 +153,10 @@ public class Particle2D : MonoBehaviour
             UpdateAngularAcceleration();
         }
         else
+        {
             position = transform.position;
+            rotation = transform.eulerAngles.z;   
+        }
     }
 
     private void SetMomentOfInertia(InertiaBody body)

@@ -14,6 +14,6 @@ public class ColliderChecker : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(test1.GetComponent<CollisionHull2D>().TestCollision(test2.GetComponent<CollisionHull2D>()));
+        Debug.Log(CollisionHull2D.TestCollision(test1.GetComponent<CollisionHull2D>(), test2.GetComponent<CollisionHull2D>()));
     }
 }

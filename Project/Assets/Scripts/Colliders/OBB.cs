@@ -6,10 +6,27 @@ using UnityEngine;
 public class OBB : CollisionHull2D
 {
     public Vector2 halfWidths;
+    protected Vector2[] axis;
+    private void Start()
+    {
+        halfWidths.x = transform.localScale.x / 2;
+        halfWidths.y = transform.localScale.y / 2;
+        axis = new Vector2[2];
+        axis[0] = new Vector2(Mathf.Cos(particle.rotation), Mathf.Sin(particle.rotation));
+        axis[1] = new Vector2(-Mathf.Sin(particle.rotation), Mathf.Sin(particle.rotation));
+    }
+
+    private void Update()
+    {
+        axis[0] = new Vector2(Mathf.Cos(particle.rotation), Mathf.Sin(particle.rotation));
+        axis[1] = new Vector2(-Mathf.Sin(particle.rotation), Mathf.Sin(particle.rotation));
+    }
 
     public OBB( Vector2 halfWidths):base(CollisionHullType2D.OBB)
     {
         this.halfWidths = halfWidths;
+        axis[0] = new Vector2(Mathf.Cos(particle.rotation), Mathf.Sin(particle.rotation));
+        axis[1] = new Vector2(-Mathf.Sin(particle.rotation), Mathf.Sin(particle.rotation));
     }
 
     protected override bool TestCollisionVsCircle(Circle other)
@@ -36,9 +53,6 @@ public class OBB : CollisionHull2D
         return delta.sqrMagnitude < other.radius * other.radius;
     }
 
-    Vector2 obbMin, obbMax, aabbMin, aabbMax;
-    Vector2 obbAABBMin, obbAABBMax, aabbOBBMin, aabbOBBMax;
-
     protected override bool TestCollisionVsAABB(AABB other)
     {
         // same as aabb aabb twice
@@ -52,45 +66,60 @@ public class OBB : CollisionHull2D
         // 6. do aabb check between 3/4
         // 7. if either fails they collide
 
-        Vector2 bottomLeft, bottomRight, topLeft, topRight;
+        Vector2[] corners = new Vector2[4];
+        Matrix4x4 localToWorldMat = transform.localToWorldMatrix, localToWorldMatOther = other.particle.transform.localToWorldMatrix;
 
-        bottomLeft = transform.InverseTransformPoint(particle.position - halfWidths);
-        bottomRight = transform.InverseTransformPoint(particle.position + new Vector2(halfWidths.x, -halfWidths.y));
-        topLeft = transform.InverseTransformPoint(particle.position + new Vector2(-halfWidths.x, halfWidths.y));
-        topRight = transform.InverseTransformPoint(particle.position + halfWidths);
+        // rotated point extents
+        corners[0] = localToWorldMat.MultiplyPoint3x4(-halfWidths);
+        corners[1] = localToWorldMat.MultiplyPoint3x4(new Vector2(halfWidths.x, -halfWidths.y));
+        corners[2] = localToWorldMat.MultiplyPoint3x4(new Vector2(-halfWidths.x, halfWidths.y));
+        corners[3] = localToWorldMat.MultiplyPoint3x4(halfWidths);
 
-        Vector2 obbAsAABBMinExt = new Vector2(Mathf.Min(bottomLeft.x, Mathf.Min(bottomRight.x, Mathf.Min(topLeft.x, topRight.x))),
-                                Mathf.Min(bottomLeft.y, Mathf.Min(bottomRight.y, Mathf.Min(topLeft.y, topRight.y)))), 
-                obbAsAABBMaxExt = new Vector2(Mathf.Max(bottomLeft.x, Mathf.Max(bottomRight.x, Mathf.Max(topLeft.x, topRight.x))),
-                                Mathf.Max(bottomLeft.y, Mathf.Max(bottomRight.y, Mathf.Max(topLeft.y, topRight.y))));
+        // aabb around the obb points
+        Vector2[] obbAsAABB = new Vector2[2];
+        GetExtentsVector(ref obbAsAABB, corners);
 
-        Vector2 obbMinExt = -halfWidths;
-        Vector2 obbMaxExt = halfWidths;
+        // aabb extents for obb
+        Vector2 obbMinExt = particle.position - halfWidths, obbMaxExt = particle.position + halfWidths;
 
-        Vector2 aabbMinExt = -other.halfWidths, aabbMaxExt = other.halfWidths;
+        // aabb extents
+        Vector2 aabbMinExt = other.particle.position - other.halfWidths, aabbMaxExt = other.particle.position + other.halfWidths;
 
-        Vector2 aabbAsOBBMinExt = particle.position + (Vector2)transform.InverseTransformPoint(aabbMinExt);
-        Vector2 aabbAsOBBMaxExt = particle.position + (Vector2)transform.InverseTransformPoint(aabbMaxExt);
+        // rotated corners
+        corners[0] = (other.particle.position - particle.position) + (Vector2)localToWorldMat.MultiplyPoint3x4(-other.halfWidths);
+        corners[1] = (other.particle.position - particle.position) + (Vector2)localToWorldMat.MultiplyPoint3x4(new Vector2(other.halfWidths.x, -other.halfWidths.y));
+        corners[2] = (other.particle.position - particle.position) + (Vector2)localToWorldMat.MultiplyPoint3x4(new Vector2(-other.halfWidths.x, other.halfWidths.y));
+        corners[3] = (other.particle.position - particle.position) + (Vector2)localToWorldMat.MultiplyPoint3x4(other.halfWidths);
 
-        bottomLeft = transform.InverseTransformPoint(other.particle.position - other.halfWidths);
-        bottomRight = transform.InverseTransformPoint(other.particle.position + new Vector2(other.halfWidths.x, -other.halfWidths.y));
-        topLeft = transform.InverseTransformPoint(other.particle.position + new Vector2(-other.halfWidths.x, other.halfWidths.y));
-        topRight = transform.InverseTransformPoint(other.particle.position + other.halfWidths);
+        // obb aabb extents
+        Vector2[] aabbAsOBB = new Vector2[2];
+        GetExtentsVector(ref aabbAsOBB, corners);
 
-        aabbAsOBBMinExt = new Vector2(Mathf.Min(bottomLeft.x, Mathf.Min(bottomRight.x, Mathf.Min(topLeft.x, topRight.x))),
-                                Mathf.Min(bottomLeft.y, Mathf.Min(bottomRight.y, Mathf.Min(topLeft.y, topRight.y))));
-        aabbAsOBBMaxExt = new Vector2(Mathf.Max(bottomLeft.x, Mathf.Max(bottomRight.x, Mathf.Max(topLeft.x, topRight.x))),
-                                Mathf.Max(bottomLeft.y, Mathf.Max(bottomRight.y, Mathf.Max(topLeft.y, topRight.y))));
+        corner11 = aabbAsOBB[0];
+        corner12 = aabbAsOBB[1];
+        corner13 = obbAsAABB[0];
+        corner14 = obbAsAABB[1];
 
-        // this one is right
-        bool firstCheck = (obbAsAABBMaxExt.x >= aabbMinExt.x && obbAsAABBMaxExt.y >= aabbMinExt.y) &&
-                            (aabbMaxExt.x >= obbAsAABBMinExt.x && aabbMaxExt.y >= obbAsAABBMinExt.y);
+        corner21 = aabbMinExt;
+        corner22 = aabbMaxExt;
+        corner23 = obbMinExt;
+        corner24 = obbMaxExt;
 
-        bool secondCheck = (aabbAsOBBMaxExt.x >= obbMinExt.x && aabbAsOBBMaxExt.y >= obbMinExt.y) &&
-                            (obbMaxExt.x >= aabbAsOBBMinExt.x && obbMaxExt.y >= aabbAsOBBMinExt.y);
+        // check the (obb)aabb vs aabb
+        bool firstCheck = (obbAsAABB[1].x >= aabbMinExt.x && obbAsAABB[1].y >= aabbMinExt.y) &&
+                            (aabbMaxExt.x >= obbAsAABB[0].x && aabbMaxExt.y >= obbAsAABB[0].y);
+
+        // check the obb(aabb) vs obb(aabb)
+        bool secondCheck = (aabbAsOBB[1].x >= obbMinExt.x && aabbAsOBB[1].y >= obbMinExt.y) &&
+                            (obbMaxExt.x >= aabbAsOBB[0].x && obbMaxExt.y >= aabbAsOBB[0].y);
 
         return firstCheck && secondCheck;
     }
+
+    Vector2 corner11, corner12, corner13, corner14;
+    Vector2 corner21, corner22, corner23, corner24;
+
+
     protected override bool TestCollisionVsOBB(OBB other)
     {
         // 1. get corner points of obb and other obb
@@ -99,22 +128,100 @@ public class OBB : CollisionHull2D
         // 4. do aabb between these points (if aabb says no collision then they're not colliding, this is for any axis)
         // 5. repeat 1-4 for axis[1]
         // 6. repeat 1-5 for other
-        return false;
+
+        Vector2[] obbCorners = new Vector2[4];
+        Vector2[] obbCornersOther = new Vector2[4];
+        Vector2[] projectedPoints = new Vector2[4];
+        // 0: min, 1: max
+        Vector2[] extents = new Vector2[2], extentsOther = new Vector2[2];
+
+        Matrix4x4 localToWorldMat = transform.localToWorldMatrix, localToWorldMatOther = other.particle.transform.localToWorldMatrix;
+
+        corner11 = obbCorners[0] = localToWorldMat.MultiplyPoint3x4(-halfWidths);
+        corner12 = obbCorners[1] = localToWorldMat.MultiplyPoint3x4(new Vector2(halfWidths.x, -halfWidths.y));
+        corner13 = obbCorners[2] = localToWorldMat.MultiplyPoint3x4(new Vector2(-halfWidths.x, halfWidths.y));
+        corner14 = obbCorners[3] = localToWorldMat.MultiplyPoint3x4(halfWidths);
+
+        corner21 = obbCornersOther[0] = localToWorldMatOther.MultiplyPoint3x4(-other.halfWidths);
+        corner22 = obbCornersOther[1] = localToWorldMatOther.MultiplyPoint3x4(new Vector2(other.halfWidths.x, -other.halfWidths.y));
+        corner23 = obbCornersOther[2] = localToWorldMatOther.MultiplyPoint3x4(new Vector2(-other.halfWidths.x, other.halfWidths.y));
+        corner24 = obbCornersOther[3] = localToWorldMatOther.MultiplyPoint3x4(other.halfWidths);
+
+        bool aabbTest;
+
+        for (int i = 0; i < axis.Length; ++i)
+        {
+            ProjectFourPoints(ref projectedPoints, obbCorners, axis[i]);
+            GetExtentsVector(ref extents, projectedPoints);
+            ProjectFourPoints(ref projectedPoints, obbCornersOther, axis[i]);
+            GetExtentsVector(ref extentsOther, projectedPoints);
+
+            aabbTest = extents[1].x >= extentsOther[0].x && extents[1].y >= extentsOther[0].y &&
+                        extentsOther[1].x >= extents[0].x && extentsOther[1].y >= extents[0].y;
+
+            if(aabbTest)
+            {
+                return false;
+            }
+        }
+
+        for(int i = 0; i < other.axis.Length; ++i)
+        {
+            ProjectFourPoints(ref projectedPoints, obbCorners, other.axis[i]);
+            GetExtentsVector(ref extents, projectedPoints);
+            ProjectFourPoints(ref projectedPoints, obbCornersOther, other.axis[i]);
+            GetExtentsVector(ref extentsOther, projectedPoints);
+
+            aabbTest = extents[1].x >= extentsOther[0].x && extents[1].y >= extentsOther[0].y &&
+                        extentsOther[1].x >= extents[0].x && extentsOther[1].y >= extents[0].y;
+
+            if (aabbTest)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void GetExtentsVector(ref Vector2[] extents, Vector2[] points)
+    {
+        Vector2 max = new Vector2(Mathf.NegativeInfinity, Mathf.NegativeInfinity), min = new Vector2(Mathf.Infinity, Mathf.Infinity);
+        for(int i = 0; i < points.Length; ++i)
+        {
+            max.x = Mathf.Max(max.x, points[i].x);
+            max.y = Mathf.Max(max.y, points[i].y);
+            min.x = Mathf.Min(min.x, points[i].x);
+            min.y = Mathf.Min(min.y, points[i].y);
+        }
+        extents[0] = min;
+        extents[1] = max;
+    }
+
+    private void ProjectFourPoints(ref Vector2[] projectedPoints, Vector2[] pointsToProject, Vector2 axis)
+    {
+        for(int i = 0; i < projectedPoints.Length; ++i)
+        {
+            projectedPoints[i] = ProjectPoint(pointsToProject[i], axis);
+        }
+    }
+
+    private Vector2 ProjectPoint(Vector2 point, Vector2 normal)
+    {
+        return Vector2.Dot(point, normal) * normal;
     }
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(obbMin, .1f);
-        Gizmos.DrawWireSphere(obbMax, .1f);
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(aabbMin, .1f);
-        Gizmos.DrawWireSphere(aabbMax, .1f);
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(obbAABBMin, .1f);
-        Gizmos.DrawWireSphere(obbAABBMax, .1f);
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(aabbOBBMin, .1f);
-        Gizmos.DrawWireSphere(aabbOBBMax, .1f);
+        Gizmos.DrawSphere(corner11, .1f);
+        Gizmos.DrawSphere(corner12, .1f);
+        Gizmos.DrawSphere(corner13, .1f);
+        Gizmos.DrawSphere(corner14, .1f);
+        Gizmos.color = Color.blue;
+        Gizmos.DrawSphere(corner21, .1f);
+        Gizmos.DrawSphere(corner22, .1f);
+        Gizmos.DrawSphere(corner23, .1f);
+        Gizmos.DrawSphere(corner24, .1f);
     }
 }
