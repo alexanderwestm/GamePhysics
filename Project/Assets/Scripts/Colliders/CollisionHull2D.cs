@@ -9,9 +9,9 @@ public abstract class CollisionHull2D : MonoBehaviour
     {
         public struct Contact
         {
-            Vector2 point;
-            Vector2 normal;
-            float restitution;
+            public Vector2 point;
+            public Vector2 normal;
+            public float restitution;
         }
 
         public CollisionHull2D a = null, b = null;
@@ -19,7 +19,10 @@ public abstract class CollisionHull2D : MonoBehaviour
         public int contactCount = 0;
         public bool status = false;
         
-        public Vector2 closingVelocity;
+        // 7.1.1
+        // if this value is negative: closing in on one another, getting closer
+        // if this value is positive: moving away from one another, getting farther
+        public float closingVelocity;
     }
 
 
@@ -48,27 +51,28 @@ public abstract class CollisionHull2D : MonoBehaviour
 
     // return a collision instead of a bool
     // or use ref to pass a collision
-    public static bool TestCollision(CollisionHull2D a, CollisionHull2D b)
+    public static bool TestCollision(CollisionHull2D a, CollisionHull2D b, out Collision collision)
     {
         switch (b.type)
         {
             case CollisionHullType2D.CIRCLE:
             {
-                return a.TestCollisionVsCircle((Circle)b);
+                return a.TestCollisionVsCircle((Circle)b, out collision);
             }
             case CollisionHullType2D.AABB:
             {
-                return a.TestCollisionVsAABB((AABB)b);
+                return a.TestCollisionVsAABB((AABB)b, out collision);
             }
             case CollisionHullType2D.OBB:
             {
-                return a.TestCollisionVsOBB((OBB)b);
+                return a.TestCollisionVsOBB((OBB)b, out collision);
             }
         }
+        collision = null;
         return false;
     }
 
-    protected abstract bool TestCollisionVsCircle(Circle other);
-    protected abstract bool TestCollisionVsAABB(AABB other);
-    protected abstract bool TestCollisionVsOBB(OBB other);
+    protected abstract bool TestCollisionVsCircle(Circle other, out Collision collision);
+    protected abstract bool TestCollisionVsAABB(AABB other, out Collision collision);
+    protected abstract bool TestCollisionVsOBB(OBB other, out Collision collision);
 }

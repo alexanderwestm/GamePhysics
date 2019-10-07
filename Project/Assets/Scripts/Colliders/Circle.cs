@@ -11,15 +11,34 @@ public class Circle : CollisionHull2D
 
     }
 
-    protected override bool TestCollisionVsCircle(Circle other)
+    protected override bool TestCollisionVsCircle(Circle other, out Collision collision)
     {
-        Vector2 distance = other.particle.position - particle.position;
+        collision = null;
+        Vector2 distance = particle.position - other.particle.position;
+
         float radiusSum = radius + other.radius;
-        return Vector3.Dot(distance, distance) <= radiusSum * radiusSum;
+        bool colliding = Vector3.Dot(distance, distance) <= radiusSum * radiusSum;
+
+        if (colliding)
+        {
+            collision = new Collision();
+            // 7.1.1 closing velocity
+            collision.closingVelocity = Vector3.Dot(distance, distance.normalized);
+            // assuming one point of contact
+            CollisionHull2D.Collision.Contact contact = collision.contact[0];
+            contact.normal = distance.normalized;
+            contact.point = radius * contact.normal;
+            collision.a = this;
+            collision.b = other;
+            collision.status = colliding;
+            collision.contactCount = 1;
+        }
+        return colliding;
     }
 
-    protected override bool TestCollisionVsAABB(AABB other)
+    protected override bool TestCollisionVsAABB(AABB other, out Collision collision)
     {
+        collision = null;
         // find closest point to the circle on the box: clamp the (center - min) and (center - max)
         // circle point collision test using closest point
 
@@ -37,8 +56,9 @@ public class Circle : CollisionHull2D
         return delta.sqrMagnitude < radius * radius;
     }
 
-    protected override bool TestCollisionVsOBB(OBB other)
+    protected override bool TestCollisionVsOBB(OBB other, out Collision collision)
     {
+        collision = null;
         // same as aabb
         // multiply circle center by box world matrix inverse
         //other.transform.worldToLocalMatrix

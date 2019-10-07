@@ -12,8 +12,9 @@ public class AABB : CollisionHull2D
         this.halfWidths = halfWidths;
     }
 
-    protected override bool TestCollisionVsCircle(Circle other)
+    protected override bool TestCollisionVsCircle(Circle other, out Collision collision)
     {
+        collision = null;
         // see circle
 
         Vector2 point, otherMin, otherMax, delta;
@@ -30,8 +31,9 @@ public class AABB : CollisionHull2D
         return delta.sqrMagnitude < other.radius * other.radius;
     }
 
-    protected override bool TestCollisionVsAABB(AABB other)
+    protected override bool TestCollisionVsAABB(AABB other, out Collision collision)
     {
+        collision = null;
         // if distance between centers is greater than half widths they're not colliding
         // component wise check
         // 1. store abs(distance) on x, y
@@ -47,8 +49,9 @@ public class AABB : CollisionHull2D
         return dist.x < sumHalfWidths.x && dist.y < sumHalfWidths.y;
     }
 
-    protected override bool TestCollisionVsOBB(OBB other)
+    protected override bool TestCollisionVsOBB(OBB other, out Collision collision)
     {
+        collision = null;
         // Code from Michael Zheng and Ben Strong, using with permission
 
 

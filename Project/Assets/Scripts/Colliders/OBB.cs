@@ -29,18 +29,21 @@ public class OBB : CollisionHull2D
         axis[1] = new Vector2(-Mathf.Sin(particle.rotation), Mathf.Sin(particle.rotation));
     }
 
-    protected override bool TestCollisionVsCircle(Circle other)
+    protected override bool TestCollisionVsCircle(Circle other, out Collision collision)
     {
-        return CollisionHull2D.TestCollision(other, this);
+        return CollisionHull2D.TestCollision(other, this, out collision);
     }
 
-    protected override bool TestCollisionVsAABB(AABB other)
+    protected override bool TestCollisionVsAABB(AABB other, out Collision collision)
     {
-        return CollisionHull2D.TestCollision(other, this);
+        return CollisionHull2D.TestCollision(other, this, out collision);
     }
 
-    protected override bool TestCollisionVsOBB(OBB other)
+    protected override bool TestCollisionVsOBB(OBB other, out Collision collision)
     {
+        collision = null;
+
+
         // Code from Michael Zheng and Ben Strong, using with permission
 
         //Transform this into others space and do AABB vs OBB

@@ -15,7 +15,8 @@ public class ColliderChecker : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(CollisionHull2D.TestCollision(test1.GetComponent<CollisionHull2D>(), test2.GetComponent<CollisionHull2D>()))
+        CollisionHull2D.Collision collision;
+        if(CollisionHull2D.TestCollision(test1.GetComponent<CollisionHull2D>(), test2.GetComponent<CollisionHull2D>(), out collision))
         {
             test1.GetComponent<MeshRenderer>().material = redMat;
             test2.GetComponent<MeshRenderer>().material = redMat;
