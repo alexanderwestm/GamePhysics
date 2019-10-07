@@ -457,7 +457,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   test1: {fileID: 1463073046}
-  test2: {fileID: 413361859}
+  test2: {fileID: 1801044009}
   redMat: {fileID: 2100000, guid: 61313dcfbc7559847b82ce0fb3f93187, type: 2}
   greenMat: {fileID: 2100000, guid: 4890a0eaf355d0347bc665c2712f6a89, type: 2}
 --- !u!4 &1449537385

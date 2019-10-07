@@ -31,27 +31,6 @@ public class OBB : CollisionHull2D
 
     protected override bool TestCollisionVsCircle(Circle other)
     {
-        // same as aabb
-        // multiply circle center by box world matrix inverse
-        // other.transform.worldToLocalMatrix
-
-        // 1. other center = transform.worldtolocalmatrix * center
-        // 2. do aabb check
-        // max extents are axis * halfwidths + position
-
-        //Vector2 minExtents = particle.position - halfWidths, maxExtents = particle.position + halfWidths;
-        //Vector2 adjustedCenter = transform.InverseTransformPoint(other.particle.position);
-        //adjustedCenter += particle.position;
-        //
-        //Vector2 closestPoint;
-        //
-        //closestPoint.x = Mathf.Clamp(adjustedCenter.x, minExtents.x, maxExtents.x);
-        //closestPoint.y = Mathf.Clamp(adjustedCenter.y, minExtents.y, maxExtents.y);
-        //
-        //Vector2 delta = adjustedCenter - closestPoint;
-        //
-        //return delta.sqrMagnitude < other.radius * other.radius;
-
         return CollisionHull2D.TestCollision(other, this);
     }
 

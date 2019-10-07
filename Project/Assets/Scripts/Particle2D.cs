@@ -66,8 +66,7 @@ public class Particle2D : MonoBehaviour
         position = transform.position;
         SetMass(startMass);
         SetMomentOfInertia(inertiaBody);
-        Vector3 hitboxSize = gameObject.GetComponent<BoxCollider>().bounds.size;
-        centerOfMassLocal = new Vector2(hitboxSize.x / 2f, hitboxSize.y / 2f);
+        centerOfMassLocal = new Vector2(transform.localScale.x / 2f, transform.localScale.y / 2f);
         centerOfMassGlobal = transform.position;
 
         forceOfGravity = ForceGenerator.GenerateForce_gravity(Vector2.up, 9.81f, mass);
@@ -161,7 +160,13 @@ public class Particle2D : MonoBehaviour
 
     private void SetMomentOfInertia(InertiaBody body)
     {
-        Vector3 hitboxSize = gameObject.GetComponent<BoxCollider>().bounds.size;
+        BoxCollider hitbox;
+        Vector3 hitboxSize = Vector3.zero;
+        gameObject.TryGetComponent<BoxCollider>(out hitbox);
+        if(hitbox != null)
+        {
+            hitboxSize = hitbox.bounds.size;
+        }
         switch(body)
         {
             case InertiaBody.RECTANGLE:

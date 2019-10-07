@@ -42,9 +42,10 @@ public class Circle : CollisionHull2D
         // same as aabb
         // multiply circle center by box world matrix inverse
         //other.transform.worldToLocalMatrix
+        Matrix4x4 otherMat = other.transform.worldToLocalMatrix;
         Vector2 minExtents = other.particle.position - other.halfWidths, maxExtents = other.particle.position + other.halfWidths;
-        Vector2 adjustedCenter = other.transform.InverseTransformPoint(particle.position);
-        adjustedCenter += other.particle.position;
+        Vector2 adjustedCenter = other.particle.position + (Vector2)(otherMat * (particle.position - other.particle.position));
+        //adjustedCenter += particle.position;
 
         Vector2 closestPoint;
 
