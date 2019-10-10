@@ -159,12 +159,13 @@ MonoBehaviour:
   rotation: 10
   angularVelocity: 0
   angularAcceleration: 0
-  startMass: 0
+  startMass: 1
   inertiaBody: 0
   totalTorque: 0
   updateType: 1
   forceType: -1
   simulate: 0
+  massInv: 0
 --- !u!114 &413361861
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -481,12 +482,13 @@ MonoBehaviour:
   rotation: 0
   angularVelocity: 0
   angularAcceleration: 0
-  startMass: 0
+  startMass: 1
   inertiaBody: -1
   totalTorque: 0
   updateType: 1
-  forceType: -1
+  forceType: 0
   simulate: 0
+  massInv: 0
 --- !u!135 &1002350192
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -570,6 +572,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1449537385}
   - component: {fileID: 1449537384}
+  - component: {fileID: 1449537386}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -584,7 +587,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1449537383}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: aa8c7274158731148ba389f559a74b78, type: 3}
   m_Name: 
@@ -607,6 +610,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1449537386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1449537383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d886570dc8f0c1b45a89ab239c306fb3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1463073046
 GameObject:
   m_ObjectHideFlags: 0
@@ -652,6 +667,7 @@ MonoBehaviour:
   updateType: 1
   forceType: -1
   simulate: 0
+  massInv: 0
 --- !u!65 &1463073048
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -867,12 +883,13 @@ MonoBehaviour:
   rotation: 0
   angularVelocity: 0
   angularAcceleration: 0
-  startMass: 0
+  startMass: 1
   inertiaBody: -1
   totalTorque: 0
   updateType: 1
   forceType: -1
   simulate: 0
+  massInv: 0
 --- !u!1 &2090361737
 GameObject:
   m_ObjectHideFlags: 0
@@ -927,12 +944,13 @@ MonoBehaviour:
   rotation: 10
   angularVelocity: 0
   angularAcceleration: 0
-  startMass: 0
+  startMass: 1
   inertiaBody: 0
   totalTorque: 0
   updateType: 1
   forceType: -1
   simulate: 0
+  massInv: 0
 --- !u!65 &2090361740
 BoxCollider:
   m_ObjectHideFlags: 0

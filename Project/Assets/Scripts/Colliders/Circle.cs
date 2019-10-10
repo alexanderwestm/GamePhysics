@@ -22,12 +22,14 @@ public class Circle : CollisionHull2D
         if (colliding)
         {
             collision = new Collision();
+            Vector2 relativeVelocity = particle.velocity - other.particle.velocity;
             // 7.1.1 closing velocity
-            collision.closingVelocity = Vector3.Dot(distance, distance.normalized);
+            collision.closingVelocity = Vector3.Dot(relativeVelocity, distance.normalized);
             // assuming one point of contact
             CollisionHull2D.Collision.Contact contact = collision.contact[0];
-            contact.normal = distance.normalized;
-            contact.point = radius * contact.normal;
+            collision.contact[0].normal = distance.normalized;
+            collision.contact[0].point = radius * collision.contact[0].normal;
+            collision.contact[0].restitution = .5f;
             collision.a = this;
             collision.b = other;
             collision.status = colliding;

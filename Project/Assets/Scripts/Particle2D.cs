@@ -35,7 +35,7 @@ public class Particle2D : MonoBehaviour
     }
 
     public Vector2 position;
-    [SerializeField] private Vector2 velocity = Vector2.zero;
+    public Vector2 velocity = Vector2.zero;
     [SerializeField] private Vector2 acceleration = Vector2.zero;
     public float rotation = 0.0f;
     [SerializeField] private float angularVelocity = 0.0f;
@@ -49,7 +49,7 @@ public class Particle2D : MonoBehaviour
 
 
     [HideInInspector] private float mass;
-    [HideInInspector] private float massInv;
+    public float massInv;
     [HideInInspector] private Vector2 totalForce = Vector2.zero;
     [HideInInspector] private Vector2 forceOfGravity;
     [HideInInspector] private Vector2 normalForceUp;
