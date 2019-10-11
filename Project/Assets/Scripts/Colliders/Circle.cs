@@ -5,10 +5,17 @@ using UnityEngine;
 [System.Serializable]
 public class Circle : CollisionHull2D
 {
-    public float radius;
-    public Circle() : base(CollisionHullType2D.CIRCLE)
+    public float radius { get; private set; }
+    public Circle(float r) : base(CollisionHullType2D.CIRCLE)
     {
+        radius = r;
+    }
 
+    public void Start()
+    {
+        Mesh mesh = gameObject.GetComponent<MeshFilter>().mesh;
+        radius = (mesh.bounds.size.x / 2) * transform.localScale.x;
+        base.type = CollisionHullType2D.CIRCLE;
     }
 
     protected override bool TestCollisionVsCircle(Circle other, out Collision collision)
@@ -26,10 +33,10 @@ public class Circle : CollisionHull2D
             // 7.1.1 closing velocity
             collision.closingVelocity = Vector3.Dot(relativeVelocity, distance.normalized);
             // assuming one point of contact
-            CollisionHull2D.Collision.Contact contact = collision.contact[0];
             collision.contact[0].normal = distance.normalized;
             collision.contact[0].point = radius * collision.contact[0].normal;
             collision.contact[0].restitution = .5f;
+            collision.contact[0].penetrationDepth = radiusSum - distance.magnitude;
             collision.a = this;
             collision.b = other;
             collision.status = colliding;
@@ -66,7 +73,10 @@ public class Circle : CollisionHull2D
         //other.transform.worldToLocalMatrix
         Matrix4x4 otherMat = other.transform.worldToLocalMatrix;
         Vector2 minExtents = other.particle.position - other.halfWidths, maxExtents = other.particle.position + other.halfWidths;
-        Vector2 adjustedCenter = other.particle.position + (Vector2)(otherMat * (particle.position - other.particle.position));
+        Vector2 adjustedCenter = otherMat.MultiplyPoint3x4(new Vector3(particle.position.x, particle.position.y, 0));
+        adjustedCenter.x *= other.transform.localScale.x;
+        adjustedCenter.y *= other.transform.localScale.y;
+        adjustedCenter += (Vector2)other.transform.position;
         //adjustedCenter += particle.position;
 
         Vector2 closestPoint;
@@ -74,8 +84,28 @@ public class Circle : CollisionHull2D
         closestPoint.x = Mathf.Clamp(adjustedCenter.x, minExtents.x, maxExtents.x);
         closestPoint.y = Mathf.Clamp(adjustedCenter.y, minExtents.y, maxExtents.y);
 
-        Vector2 delta = adjustedCenter - closestPoint;
+        Vector2 deltaPos = adjustedCenter - closestPoint;
 
-        return delta.sqrMagnitude < radius * radius;
+        bool colliding = deltaPos.sqrMagnitude < radius * radius;
+
+        if(colliding)
+        {
+            collision = new Collision();
+            Vector2 relativeVelocity = particle.velocity - other.particle.velocity;
+            Vector2 relativePosition = particle.position - other.particle.position;
+            // 7.1.1 closing velocity
+            collision.closingVelocity = Vector3.Dot(relativeVelocity, relativePosition.normalized);
+            // assuming one point of contact
+            collision.contact[0].normal = deltaPos.normalized;
+            collision.contact[0].point = closestPoint;
+            collision.contact[0].restitution = .5f;
+            collision.contact[0].penetrationDepth = radius - deltaPos.magnitude;
+            collision.a = this;
+            collision.b = other;
+            collision.status = colliding;
+            collision.contactCount = 1;
+        }
+
+        return colliding;
     }
 }

@@ -5,15 +5,20 @@ using UnityEngine;
 [System.Serializable]
 public class OBB : CollisionHull2D
 {
-    public Vector2 halfWidths;
+    public Vector2 halfWidths { get; private set; }
     protected Vector2[] axis;
     private void Start()
     {
-        halfWidths.x = transform.localScale.x / 2;
-        halfWidths.y = transform.localScale.y / 2;
+        Mesh mesh = gameObject.GetComponent<MeshFilter>().mesh;
+        Vector2 temp = new Vector2();
+        temp.x = mesh.bounds.size.x * transform.localScale.x / 2;
+        temp.y = mesh.bounds.size.y * transform.localScale.y / 2;
+        halfWidths = new Vector2(temp.x, temp.y);
         axis = new Vector2[2];
         axis[0] = new Vector2(Mathf.Cos(particle.rotation), Mathf.Sin(particle.rotation));
         axis[1] = new Vector2(-Mathf.Sin(particle.rotation), Mathf.Sin(particle.rotation));
+
+        base.type = CollisionHullType2D.OBB;
     }
 
     private void Update()

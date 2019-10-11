@@ -5,11 +5,22 @@ using UnityEngine;
 [System.Serializable]
 public class AABB : CollisionHull2D
 {
-    public Vector2 halfWidths;
+    public Vector2 halfWidths { get; private set; }
 
     public AABB(Vector2 halfWidths) : base(CollisionHullType2D.AABB)
     {
         this.halfWidths = halfWidths;
+    }
+
+    private void Start()
+    {
+        Mesh mesh = gameObject.GetComponent<MeshFilter>().mesh;
+        Vector2 temp = new Vector2();
+        temp.x = mesh.bounds.size.x * transform.localScale.x / 2;
+        temp.y = mesh.bounds.size.y * transform.localScale.y / 2;
+        halfWidths = new Vector2(temp.x, temp.y);
+
+        base.type = CollisionHullType2D.AABB;
     }
 
     protected override bool TestCollisionVsCircle(Circle other, out Collision collision)

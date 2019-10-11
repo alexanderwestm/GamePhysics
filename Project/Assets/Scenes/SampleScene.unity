@@ -160,11 +160,11 @@ MonoBehaviour:
   angularVelocity: 0
   angularAcceleration: 0
   startMass: 1
-  inertiaBody: 0
+  inertiaBody: 1
   totalTorque: 0
   updateType: 1
   forceType: -1
-  simulate: 0
+  simulate: 1
   massInv: 0
 --- !u!114 &413361861
 MonoBehaviour:
@@ -180,7 +180,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 2
   particle: {fileID: 413361860}
-  halfWidths: {x: 0, y: 0}
 --- !u!65 &413361862
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -248,7 +247,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 413361859}
   m_LocalRotation: {x: 0, y: 0, z: 0.08715578, w: 0.9961947}
-  m_LocalPosition: {x: 6.47, y: 0.79, z: 4.8125}
+  m_LocalPosition: {x: 1.44, y: 0.65, z: 4.8125}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -463,7 +462,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   particle: {fileID: 1002350191}
-  radius: 0.5
 --- !u!114 &1002350191
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -477,7 +475,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   position: {x: 0, y: 0}
-  velocity: {x: 0, y: -1}
+  velocity: {x: 5, y: 0}
   acceleration: {x: 0, y: 0}
   rotation: 0
   angularVelocity: 0
@@ -487,7 +485,7 @@ MonoBehaviour:
   totalTorque: 0
   updateType: 1
   forceType: -1
-  simulate: 0
+  simulate: 1
   massInv: 0
 --- !u!135 &1002350192
 SphereCollider:
@@ -556,7 +554,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1002350189}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.6, y: 3.83, z: 0}
+  m_LocalPosition: {x: -6.48, y: 0.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -642,7 +640,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1463073047
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -755,7 +753,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 2
   particle: {fileID: 1463073047}
-  halfWidths: {x: 0.5, y: 0.5}
 --- !u!1 &1801044009
 GameObject:
   m_ObjectHideFlags: 0
@@ -776,7 +773,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!135 &1801044010
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -844,8 +841,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1801044009}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.65, y: 1.23, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 3.38, y: 1.58, z: 0}
+  m_LocalScale: {x: 5, y: 5, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 5
@@ -864,7 +861,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   particle: {fileID: 1801044015}
-  radius: 0.5
 --- !u!114 &1801044015
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -883,12 +879,12 @@ MonoBehaviour:
   rotation: 0
   angularVelocity: 0
   angularAcceleration: 0
-  startMass: 1
+  startMass: 10
   inertiaBody: -1
   totalTorque: 0
   updateType: 1
   forceType: -1
-  simulate: 0
+  simulate: 1
   massInv: 0
 --- !u!1 &2090361737
 GameObject:
@@ -910,7 +906,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2090361738
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -925,7 +921,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 1
   particle: {fileID: 2090361739}
-  halfWidths: {x: 0.5, y: 0.5}
 --- !u!114 &2090361739
 MonoBehaviour:
   m_ObjectHideFlags: 0

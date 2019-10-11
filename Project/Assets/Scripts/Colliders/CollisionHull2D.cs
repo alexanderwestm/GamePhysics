@@ -12,6 +12,7 @@ public abstract class CollisionHull2D : MonoBehaviour
             public Vector2 point;
             public Vector2 normal;
             public float restitution;
+            public float penetrationDepth;
         }
 
         public CollisionHull2D a = null, b = null;
@@ -35,19 +36,19 @@ public abstract class CollisionHull2D : MonoBehaviour
         NUM_TYPES
     }
 
-    public CollisionHullType2D type;
-    public Particle2D particle;
+    public CollisionHullType2D type { get; protected set; }
+    public Particle2D particle { get; private set; }
 
     protected CollisionHull2D(CollisionHullType2D collisionType)
     {
-        this.type = collisionType;
+        particle = GetComponent<Particle2D>();
+        type = collisionType;
     }
 
-    private void Start()
+    private void Awake()
     {
         particle = GetComponent<Particle2D>();
     }
-
 
     // return a collision instead of a bool
     // or use ref to pass a collision

@@ -160,14 +160,13 @@ public class Particle2D : MonoBehaviour
 
     private void SetMomentOfInertia(InertiaBody body)
     {
-        BoxCollider hitbox;
         Vector3 hitboxSize = Vector3.zero;
-        gameObject.TryGetComponent<BoxCollider>(out hitbox);
-        if(hitbox != null)
-        {
-            hitboxSize = hitbox.bounds.size;
-        }
-        switch(body)
+        Mesh mesh = gameObject.GetComponent<MeshFilter>().mesh;
+        hitboxSize.x = mesh.bounds.size.x * transform.localScale.x;
+        hitboxSize.y = mesh.bounds.size.y * transform.localScale.y;
+        //hitboxSize.z = mesh.bounds.size.z * transform.localScale.z;
+
+        switch (body)
         {
             case InertiaBody.RECTANGLE:
             {
@@ -204,8 +203,17 @@ public class Particle2D : MonoBehaviour
                 inertia = (1f / 3f) * mass * dim * dim;
                 break;
             }
+            case InertiaBody.NONE:
+            {
+                inertia = 0;
+                inertiaInv = 0;
+                break;
+            }
         }
-        inertiaInv = 1 / inertia;
+        if (inertia > 0)
+        {
+            inertiaInv = 1 / inertia;
+        }
     }
 
     public void SetMass(float newMass)

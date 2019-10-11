@@ -15,7 +15,6 @@ public class CollisionSystem : MonoBehaviour
     private void Update()
     {
         CheckCollisions();
-        Debug.Log(hullCollisions.Count);
         ResolveCollisions();
     }
 
@@ -54,6 +53,7 @@ public class CollisionSystem : MonoBehaviour
         foreach (CollisionHull2D.Collision collision in hullCollisions)
         {
             ResolveVelocity(collision);
+            ResolveInterpenetration(collision);
         }
         hullCollisions.Clear();
     }
@@ -82,13 +82,26 @@ public class CollisionSystem : MonoBehaviour
             float deltaVelocity = realSeparating - collision.closingVelocity;
             float impulse = deltaVelocity / totalInverseMass;
             Vector2 impulsePerIMass = contact.normal * impulse;
-            collision.a.particle.velocity = collision.a.particle.velocity + (impulsePerIMass * collision.a.particle.massInv);
-            collision.b.particle.velocity = collision.b.particle.velocity + (impulsePerIMass * -collision.b.particle.massInv);
+            collision.a.particle.velocity += (impulsePerIMass * collision.a.particle.massInv);
+            collision.b.particle.velocity += (impulsePerIMass * -collision.b.particle.massInv);
         }
     }
 
-    private void ResolveInterpenetration()
+    private void ResolveInterpenetration(CollisionHull2D.Collision collision)
     {
-
+        for (int i = 0; i < collision.contactCount; ++i)
+        {
+            CollisionHull2D.Collision.Contact contact = collision.contact[i];
+            if (contact.penetrationDepth > 0)
+            {
+                float totalInvMass = collision.a.particle.massInv + collision.b.particle.massInv;
+                if (totalInvMass > 0)
+                {
+                    Vector2 movePerIMass = contact.normal * (contact.penetrationDepth / totalInvMass);
+                    collision.a.particle.position += movePerIMass * collision.a.particle.massInv;
+                    collision.b.particle.position += movePerIMass * -collision.b.particle.massInv;
+                }
+            }
+        }
     }
 }
