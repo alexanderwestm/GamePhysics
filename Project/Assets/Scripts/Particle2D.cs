@@ -60,6 +60,8 @@ public class Particle2D : MonoBehaviour
     [HideInInspector] private Vector2 centerOfMassLocal;
     [HideInInspector] private Vector2 centerOfMassGlobal;
 
+    [SerializeField] float accelerationGravity;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -69,7 +71,7 @@ public class Particle2D : MonoBehaviour
         centerOfMassLocal = new Vector2(transform.localScale.x / 2f, transform.localScale.y / 2f);
         centerOfMassGlobal = transform.position;
 
-        forceOfGravity = ForceGenerator.GenerateForce_gravity(Vector2.up, 9.81f, mass);
+        forceOfGravity = ForceGenerator.GenerateForce_gravity(Vector2.up, accelerationGravity, mass);
         normalForceUp = ForceGenerator.GenerateForce_normal(forceOfGravity, Vector2.up);
         normalForce45 = ForceGenerator.GenerateForce_normal(forceOfGravity, new Vector2(1, 1));
         normalForceLeft = ForceGenerator.GenerateForce_normal(forceOfGravity, new Vector2(1, 0));
@@ -144,10 +146,12 @@ public class Particle2D : MonoBehaviour
                 }
                 case ForceType.TORQUE:
                 {
-                    AddTorque(new Vector2(1, 1), transform.position + new Vector3(.9f, 0, 0));
+                    AddTorque(new Vector2(1, 1), transform.position + new Vector3(.9f, 0, 0), false);
                     break;
                 }
             }
+
+
             UpdateAcceleration();
             UpdateAngularAcceleration();
         }
@@ -232,13 +236,19 @@ public class Particle2D : MonoBehaviour
         totalForce += force;
     }
 
-    public void AddTorque(Vector2 force, Vector2 pointApplied)
+    public void AddTorque(Vector2 force, Vector2 pointApplied, bool local)
     {
         // Formula: https://forum.unity.com/threads/how-to-calculate-how-much-torque-will-rigidbody-addforceatposition-add.287164/#post-1927110
-        Vector2 relativePoint = pointApplied - centerOfMassGlobal;
+        Vector2 relativePoint;
+        if(local)
+        {
+            relativePoint = pointApplied - centerOfMassLocal;
+        }
+        else
+        {
+            relativePoint = pointApplied - centerOfMassGlobal;
+        }
         float torqueToApply = relativePoint.x * force.y - relativePoint.y * force.x;
-        //float angle = Mathf.Atan2(relativePoint.y, relativePoint.x) - Mathf.Atan2(force.y, force.y);
-        //float torqueToApply = relativePoint.magnitude * force.magnitude * Mathf.Sin(angle) * Mathf.Rad2Deg;
         totalTorque += torqueToApply;
     }
 

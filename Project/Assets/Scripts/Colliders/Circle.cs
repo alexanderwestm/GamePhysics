@@ -50,8 +50,8 @@ public class Circle : CollisionHull2D
         collision = null;
         // find closest point to the circle on the box: clamp the (center - min) and (center - max)
         // circle point collision test using closest point
-
         Vector2 point, otherMin, otherMax, delta;
+
         otherMin = other.particle.position - other.halfWidths;
         otherMax = other.particle.position + other.halfWidths;
 
@@ -60,9 +60,28 @@ public class Circle : CollisionHull2D
         point.y = Mathf.Clamp(particle.position.y, otherMin.y, otherMax.y);
 
         delta = particle.position - point;
+        bool colliding = delta.sqrMagnitude < radius * radius;
+
+        if(colliding)
+        {
+            collision = new Collision();
+            Vector2 relativeVelocity = particle.velocity - other.particle.velocity;
+            Vector2 relativePosition = particle.position - other.particle.position;
+            // 7.1.1 closing velocity
+            collision.closingVelocity = Vector3.Dot(relativeVelocity, relativePosition.normalized);
+            // assuming one point of contact
+            collision.contact[0].normal = delta.normalized;
+            collision.contact[0].point = point;
+            collision.contact[0].restitution = .5f;
+            collision.contact[0].penetrationDepth = radius - delta.magnitude;
+            collision.a = this;
+            collision.b = other;
+            collision.status = colliding;
+            collision.contactCount = 1;
+        }
 
         // point collision with circle test
-        return delta.sqrMagnitude < radius * radius;
+        return colliding;
     }
 
     protected override bool TestCollisionVsOBB(OBB other, out Collision collision)

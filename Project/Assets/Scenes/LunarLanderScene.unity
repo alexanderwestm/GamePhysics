@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 625232535}
   - component: {fileID: 625232534}
   m_Layer: 0
-  m_Name: Sphere
+  m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -160,12 +160,13 @@ MonoBehaviour:
   angularVelocity: 0
   angularAcceleration: 0
   startMass: 1
-  inertiaBody: 0
+  inertiaBody: 1
   totalTorque: 0
   updateType: 1
   forceType: 0
-  simulate: 0
+  simulate: 1
   massInv: 0
+  accelerationGravity: 0.81
 --- !u!114 &625232535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -236,7 +237,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 625232533}
-  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!4 &625232539
 Transform:
   m_ObjectHideFlags: 0
@@ -303,7 +304,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 0
+  orthographic: 1
   orthographic size: 5
   m_Depth: -1
   m_CullingMask:
@@ -364,7 +365,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1543762378}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 39c87a60aa9a53542a2f77a9d84c0d10, type: 3}
+  m_Script: {fileID: 11500000, guid: ddd73d4a709b85745a5eb6f9e9b4d660, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &1543762380
@@ -392,6 +393,7 @@ MonoBehaviour:
   forceType: -1
   simulate: 0
   massInv: 0
+  accelerationGravity: 0
 --- !u!65 &1543762381
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -566,8 +568,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1864571977}
   - component: {fileID: 1864571976}
+  - component: {fileID: 1864571978}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -599,3 +602,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1864571978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1864571975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed42ff62032109044ba86f6796635a42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 625232533}
+  speed: 1
+  rotationSpeed: 0.5
