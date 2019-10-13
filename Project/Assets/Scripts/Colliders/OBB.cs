@@ -7,6 +7,7 @@ public class OBB : CollisionHull2D
 {
     public Vector2 halfWidths { get; private set; }
     protected Vector2[] axis;
+
     private void Start()
     {
         MeshFilter meshFilter = gameObject.GetComponent<MeshFilter>();
@@ -29,7 +30,7 @@ public class OBB : CollisionHull2D
         axis[0] = new Vector2(Mathf.Cos(particle.rotation), Mathf.Sin(particle.rotation));
         axis[1] = new Vector2(-Mathf.Sin(particle.rotation), Mathf.Sin(particle.rotation));
 
-        base.type = CollisionHullType2D.OBB;
+        type = CollisionHullType2D.OBB;
     }
 
     private void Update()

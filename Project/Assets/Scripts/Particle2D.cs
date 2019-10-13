@@ -57,7 +57,7 @@ public class Particle2D : MonoBehaviour
     [HideInInspector] private Vector2 normalForceLeft;
     [HideInInspector] private float inertia;
     [HideInInspector] private float inertiaInv;
-    [HideInInspector] private Vector2 centerOfMassLocal;
+    public Vector2 centerOfMassLocal { get; private set; }
     [HideInInspector] private Vector2 centerOfMassGlobal;
 
     [SerializeField] float accelerationGravity;
@@ -66,6 +66,7 @@ public class Particle2D : MonoBehaviour
     void Start()
     {
         position = transform.position;
+        rotation = transform.rotation.eulerAngles.z;
         SetMass(startMass);
         SetMomentOfInertia(inertiaBody);
         centerOfMassLocal = new Vector2(transform.localScale.x / 2f, transform.localScale.y / 2f);
@@ -75,6 +76,19 @@ public class Particle2D : MonoBehaviour
         normalForceUp = ForceGenerator.GenerateForce_normal(forceOfGravity, Vector2.up);
         normalForce45 = ForceGenerator.GenerateForce_normal(forceOfGravity, new Vector2(1, 1));
         normalForceLeft = ForceGenerator.GenerateForce_normal(forceOfGravity, new Vector2(1, 0));
+    }
+
+    public void ReInit()
+    {
+        position = Vector2.zero;
+        velocity = Vector2.zero;
+        acceleration = Vector2.zero;
+        rotation = 0;
+        angularVelocity = 0;
+        angularAcceleration = 0;
+
+        totalForce = Vector2.zero;
+        totalTorque = 0;
     }
 
     // Update is called once per frame
@@ -164,10 +178,26 @@ public class Particle2D : MonoBehaviour
 
     private void SetMomentOfInertia(InertiaBody body)
     {
+        if(InertiaBody.NONE == body)
+        {
+            inertia = 0;
+            inertiaInv = 0;
+            return;
+        }
         Vector3 hitboxSize = Vector3.zero;
-        Mesh mesh = gameObject.GetComponent<MeshFilter>().mesh;
-        hitboxSize.x = mesh.bounds.size.x * transform.localScale.x;
-        hitboxSize.y = mesh.bounds.size.y * transform.localScale.y;
+        MeshFilter meshFilter = gameObject.GetComponent<MeshFilter>();
+        SpriteRenderer renderer = GetComponent<SpriteRenderer>();
+        if(meshFilter != null)
+        {
+            hitboxSize.x = meshFilter.mesh.bounds.size.x * transform.localScale.x;
+            hitboxSize.y = meshFilter.mesh.bounds.size.y * transform.localScale.y;
+        }
+        else if(renderer != null)
+        {
+            hitboxSize.x = renderer.sprite.bounds.size.x * transform.localScale.x;
+            hitboxSize.y = renderer.sprite.bounds.size.y * transform.localScale.y;
+        }
+
         //hitboxSize.z = mesh.bounds.size.z * transform.localScale.z;
 
         switch (body)
@@ -207,17 +237,8 @@ public class Particle2D : MonoBehaviour
                 inertia = (1f / 3f) * mass * dim * dim;
                 break;
             }
-            case InertiaBody.NONE:
-            {
-                inertia = 0;
-                inertiaInv = 0;
-                break;
-            }
         }
-        if (inertia > 0)
-        {
-            inertiaInv = 1 / inertia;
-        }
+        inertiaInv = 1 / inertia;
     }
 
     public void SetMass(float newMass)
@@ -267,12 +288,14 @@ public class Particle2D : MonoBehaviour
     private void UpdateRotationEulerExplicit(float dt)
     {
         rotation += angularVelocity * dt;
+        rotation %= 360;
         angularVelocity += angularAcceleration * dt;
     }
 
     private void UpdateRotationKinematic(float dt)
     {
         rotation += angularVelocity * dt + .5f * angularAcceleration * dt * dt;
+        rotation %= 360;
         angularVelocity += angularAcceleration * dt;
     }
 

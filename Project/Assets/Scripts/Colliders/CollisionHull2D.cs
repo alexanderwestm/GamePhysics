@@ -36,7 +36,7 @@ public abstract class CollisionHull2D : MonoBehaviour
         NUM_TYPES
     }
 
-    public CollisionHullType2D type { get; protected set; }
+    public CollisionHullType2D type = CollisionHullType2D.INVALID_TYPE;// { get; protected set; }
     public Particle2D particle { get; private set; }
 
     protected CollisionHull2D(CollisionHullType2D collisionType)

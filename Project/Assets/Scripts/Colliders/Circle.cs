@@ -25,7 +25,7 @@ public class Circle : CollisionHull2D
 
             radius = renderer.sprite.bounds.size.x * transform.localScale.x * .5f;
         }
-        base.type = CollisionHullType2D.CIRCLE;
+        type = CollisionHullType2D.CIRCLE;
     }
 
     protected override bool TestCollisionVsCircle(Circle other, out Collision collision)

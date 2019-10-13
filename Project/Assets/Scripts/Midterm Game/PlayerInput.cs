@@ -20,7 +20,6 @@ public class PlayerInput : MonoBehaviour
         }
         playerParticle = player.GetComponent<Particle2D>();
     }
-    Vector2 point;
     // Update is called once per frame
     void Update()
     {
@@ -32,21 +31,20 @@ public class PlayerInput : MonoBehaviour
         if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
         {
             //point = transform.worldToLocalMatrix.MultiplyPoint3x4(new Vector2(-.9f, -.9f));
-            playerParticle.AddTorque(player.transform.up * rotationSpeed, rightThruster.transform.localPosition, true);
+            // this is wonky af still
+            Vector2 point = playerParticle.centerOfMassLocal + new Vector2(-1f, -1f);
+            playerParticle.AddTorque(Vector2.up * rotationSpeed, point * player.transform.localScale, true);
         }
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
         {
             //point = transform.worldToLocalMatrix.MultiplyPoint3x4(new Vector2(.9f, -.9f));
-            playerParticle.AddTorque(player.transform.up * rotationSpeed, leftThruster.transform.localPosition, true);
+            // this is wonky af still
+            Vector2 point = playerParticle.centerOfMassLocal + new Vector2(1f, -1f);
+            playerParticle.AddTorque(Vector2.up * rotationSpeed, point * player.transform.localScale, true);
         }
         if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
         {
             playerParticle.AddForce(player.transform.up * -speed);
         }
-    }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawWireSphere(point, .1f);
     }
 }

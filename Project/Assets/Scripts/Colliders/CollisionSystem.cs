@@ -4,12 +4,21 @@ using UnityEngine;
 
 public class CollisionSystem : MonoBehaviour
 {
+    private static CollisionSystem _instance;
+    public static CollisionSystem Instance { get { return _instance; } }
+
+
     List<CollisionHull2D> collisionHulls;
     List<CollisionHull2D.Collision> hullCollisions;
+
     private void Awake()
     {
         collisionHulls = new List<CollisionHull2D>(GameObject.FindObjectsOfType<CollisionHull2D>());
         hullCollisions = new List<CollisionHull2D.Collision>();
+        if (_instance == null)
+        {
+            _instance = this;
+        }
     }
 
     private void Update()
@@ -26,9 +35,10 @@ public class CollisionSystem : MonoBehaviour
         {
             for (int k = j; k < collisionHulls.Count; ++k)
             {
-                if(collisionHulls[j] != collisionHulls[k])
+                CollisionHull2D a = collisionHulls[j], b = collisionHulls[k];
+                if (a != b)
                 {
-                    if (CollisionHull2D.TestCollision(collisionHulls[j], collisionHulls[k], out collision))
+                    if (CollisionHull2D.TestCollision(a, b, out collision))
                     {
                         foreach (CollisionHull2D.Collision col in hullCollisions)
                         {
@@ -39,20 +49,44 @@ public class CollisionSystem : MonoBehaviour
                         }
                         if (!duplicate)
                         {
-                            if(collisionHulls[j].tag.ToLower() == "laser" || collisionHulls[k].tag.ToLower() == "laser")
+                            if (AreCollisionTags(a, b, "laser", "asteroid"))
                             {
-
+                                AsteroidScript script;
+                                a.TryGetComponent<AsteroidScript>(out script);
+                                if (script)
+                                {
+                                    script.Remove();
+                                }
+                                else
+                                {
+                                    b.TryGetComponent<AsteroidScript>(out script);
+                                    script.Remove();
+                                }
+                                RemoveCollisionHull(a);
+                                RemoveCollisionHull(b);
+                                Destroy(a.gameObject);
+                                Destroy(b.gameObject);
                             }
-                            else
+                            else if (!AreCollisionTags(a, b, "player", "laser") && !AreCollisionTags(a, b, "laser", "laser"))
                             {
                                 hullCollisions.Add(collision);
                                 collision = new CollisionHull2D.Collision();
+                            }
+
+                            if(AreCollisionTags(a, b, "player", "asteroid"))
+                            {
+                                AsteroidGameManager.Instance.ChangePlayerHealth(collision.closingVelocity);
                             }
                         }
                     }
                 }
             }
         }
+    }
+
+    private bool AreCollisionTags(CollisionHull2D a, CollisionHull2D b, string typeA, string typeB)
+    {
+        return (a.tag.ToLower() == typeA && b.tag.ToLower() == typeB) || (a.tag.ToLower() == typeB && b.tag.ToLower() == typeA);
     }
 
     private void ResolveCollisions()
@@ -110,5 +144,18 @@ public class CollisionSystem : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void AddCollisionHull(CollisionHull2D col)
+    {
+        if(!collisionHulls.Contains(col))
+        {
+            collisionHulls.Add(col);
+        }
+    }
+
+    public void RemoveCollisionHull(CollisionHull2D col)
+    {
+        collisionHulls.Remove(col);
     }
 }

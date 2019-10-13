@@ -1,0 +1,232 @@
+fileFormatVersion: 2
+guid: 904cce58f40cf1245abb92bdcbfabb7f
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8149009158662877648
+    second: asteroid_0
+  - first:
+      213: 3933743010824487973
+    second: asteroid_1
+  - first:
+      213: -2668201035383378144
+    second: asteroid_2
+  - first:
+      213: 4381731917727284322
+    second: asteroid_3
+  externalObjects: {}
+  serializedVersion: 10
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: -1
+    aniso: -1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: -1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 0
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: 0
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: asteroid_0
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 178
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e95c6ac037c2ca48b587d2ea0bfdea2
+      internalID: 8149009158662877648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: asteroid_1
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 133
+        width: 28
+        height: 28
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9516b5219c5bac44da1adefcc50c061d
+      internalID: 3933743010824487973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: asteroid_2
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 82
+        width: 34
+        height: 34
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 017bfa1f5b9982b4c8fbd6d87e58558a
+      internalID: -2668201035383378144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: asteroid_3
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 9
+        width: 57
+        height: 57
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2253dbe0ec287ec47a70fc5687c9bb4f
+      internalID: 4381731917727284322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline:
+    - - {x: 17.5, y: -37}
+      - {x: -5.5, y: -37}
+      - {x: -30.5, y: -65}
+      - {x: -30.5, y: -95}
+      - {x: -23.5, y: -98}
+      - {x: 24.5, y: -98}
+      - {x: 29.5, y: -86}
+      - {x: 29.5, y: -51}
+      - {x: 24.5, y: -38}
+    - - {x: -10.5, y: 10}
+      - {x: -22.5, y: -4}
+      - {x: -22.5, y: -11}
+      - {x: -15.5, y: -18}
+      - {x: -10.5, y: -20}
+      - {x: 10.5, y: -20}
+      - {x: 15.5, y: -13}
+      - {x: 15.5, y: -3}
+      - {x: 2.5, y: 10}
+    - - {x: -13.5, y: 58}
+      - {x: -19.5, y: 44}
+      - {x: -19.5, y: 26}
+      - {x: 9.5, y: 26}
+      - {x: 12.5, y: 32}
+      - {x: 12.5, y: 49}
+      - {x: 6.5, y: 58}
+    - - {x: -7.5, y: 90}
+      - {x: -11.5, y: 83}
+      - {x: -11.5, y: 74}
+      - {x: -8.5, y: 72}
+      - {x: 4.5, y: 72}
+      - {x: 7.5, y: 76}
+      - {x: 7.5, y: 82}
+      - {x: 6.5, y: 90}
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -29,7 +29,7 @@ public class AABB : CollisionHull2D
         }
 
         halfWidths = new Vector2(temp.x, temp.y);
-        base.type = CollisionHullType2D.AABB;
+        type = CollisionHullType2D.AABB;
     }
 
     protected override bool TestCollisionVsCircle(Circle other, out Collision collision)
