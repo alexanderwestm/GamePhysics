@@ -13,8 +13,18 @@ public class Circle : CollisionHull2D
 
     public void Start()
     {
-        Mesh mesh = gameObject.GetComponent<MeshFilter>().mesh;
-        radius = (mesh.bounds.size.x / 2) * transform.localScale.x;
+        MeshFilter meshFilter = GetComponent<MeshFilter>();
+        SpriteRenderer renderer = GetComponent<SpriteRenderer>();
+        if(meshFilter != null)
+        {
+            radius = meshFilter.mesh.bounds.size.x * transform.localScale.x * .5f;
+
+        }
+        else if(renderer != null)
+        {
+
+            radius = renderer.sprite.bounds.size.x * transform.localScale.x * .5f;
+        }
         base.type = CollisionHullType2D.CIRCLE;
     }
 

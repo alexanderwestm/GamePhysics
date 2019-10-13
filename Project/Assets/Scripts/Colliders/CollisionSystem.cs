@@ -39,8 +39,15 @@ public class CollisionSystem : MonoBehaviour
                         }
                         if (!duplicate)
                         {
-                            hullCollisions.Add(collision);
-                            collision = new CollisionHull2D.Collision();
+                            if(collisionHulls[j].tag.ToLower() == "laser" || collisionHulls[k].tag.ToLower() == "laser")
+                            {
+
+                            }
+                            else
+                            {
+                                hullCollisions.Add(collision);
+                                collision = new CollisionHull2D.Collision();
+                            }
                         }
                     }
                 }

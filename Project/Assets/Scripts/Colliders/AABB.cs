@@ -14,12 +14,21 @@ public class AABB : CollisionHull2D
 
     private void Start()
     {
-        Mesh mesh = gameObject.GetComponent<MeshFilter>().mesh;
+        MeshFilter meshFilter = gameObject.GetComponent<MeshFilter>();
+        SpriteRenderer renderer = GetComponent<SpriteRenderer>();
         Vector2 temp = new Vector2();
-        temp.x = mesh.bounds.size.x * transform.localScale.x / 2;
-        temp.y = mesh.bounds.size.y * transform.localScale.y / 2;
-        halfWidths = new Vector2(temp.x, temp.y);
+        if (meshFilter != null)
+        {
+            temp.x = meshFilter.mesh.bounds.size.x * transform.localScale.x / 2;
+            temp.y = meshFilter.mesh.bounds.size.y * transform.localScale.y / 2;
+        }
+        else if(renderer != null)
+        {
+            temp.x = renderer.sprite.bounds.size.x * transform.localScale.x * .5f;
+            temp.y = renderer.sprite.bounds.size.y * transform.localScale.y * .5f;
+        }
 
+        halfWidths = new Vector2(temp.x, temp.y);
         base.type = CollisionHullType2D.AABB;
     }
 
