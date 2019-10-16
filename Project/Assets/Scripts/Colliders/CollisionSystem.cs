@@ -10,11 +10,13 @@ public class CollisionSystem : MonoBehaviour
 
     List<CollisionHull2D> collisionHulls;
     List<CollisionHull2D.Collision> hullCollisions;
+    List<CollisionHull2D> toRemove;
 
     private void Awake()
     {
-        collisionHulls = new List<CollisionHull2D>(GameObject.FindObjectsOfType<CollisionHull2D>());
+        collisionHulls = new List<CollisionHull2D>(FindObjectsOfType<CollisionHull2D>());
         hullCollisions = new List<CollisionHull2D.Collision>();
+        toRemove = new List<CollisionHull2D>();
         if (_instance == null)
         {
             _instance = this;
@@ -29,7 +31,8 @@ public class CollisionSystem : MonoBehaviour
 
     private void CheckCollisions()
     {
-        CollisionHull2D.Collision collision = new CollisionHull2D.Collision();
+        CollisionHull2D.Collision collision;
+        collisionHulls = new List<CollisionHull2D>(FindObjectsOfType<CollisionHull2D>());
         bool duplicate = false;
         for (int j = 0; j < collisionHulls.Count; ++j)
         {
@@ -40,48 +43,56 @@ public class CollisionSystem : MonoBehaviour
                 {
                     if (CollisionHull2D.TestCollision(a, b, out collision))
                     {
-                        foreach (CollisionHull2D.Collision col in hullCollisions)
+                        if (collision != null)
                         {
-                            if ((col.a == collision.a && col.b == collision.b) || (col.a == collision.b && col.b == collision.a))
+                            // checking against known collisions and removing colliders for duplicates
+                            foreach (CollisionHull2D.Collision col in hullCollisions)
                             {
-                                duplicate = true;
-                            }
-                        }
-                        if (!duplicate)
-                        {
-                            if (AreCollisionTags(a, b, "laser", "asteroid"))
-                            {
-                                AsteroidScript script;
-                                a.TryGetComponent<AsteroidScript>(out script);
-                                if (script)
+                                if ((col.a == collision.a && col.b == collision.b) || (col.a == collision.b && col.b == collision.a))
                                 {
-                                    script.Remove();
+                                    duplicate = true;
                                 }
-                                else
-                                {
-                                    b.TryGetComponent<AsteroidScript>(out script);
-                                    script.Remove();
-                                }
-                                RemoveCollisionHull(a);
-                                RemoveCollisionHull(b);
-                                Destroy(a.gameObject);
-                                Destroy(b.gameObject);
                             }
-                            else if (!AreCollisionTags(a, b, "player", "laser") && !AreCollisionTags(a, b, "laser", "laser"))
+                            if (!duplicate)
                             {
-                                hullCollisions.Add(collision);
-                                collision = new CollisionHull2D.Collision();
-                            }
+                                if (AreCollisionTags(a, b, "laser", "asteroid"))
+                                {
+                                    AsteroidScript script;
+                                    a.TryGetComponent<AsteroidScript>(out script);
+                                    if (script)
+                                    {
+                                        script.Remove();
+                                    }
+                                    else
+                                    {
+                                        b.TryGetComponent<AsteroidScript>(out script);
+                                        script.Remove();
+                                    }
+                                    Destroy(a.gameObject);
+                                    Destroy(b.gameObject);
+                                }
+                                else if (!AreCollisionTags(a, b, "player", "laser") && !AreCollisionTags(a, b, "laser", "laser"))
+                                {
+                                    hullCollisions.Add(collision);
+                                    if (AreCollisionTags(a, b, "player", "asteroid"))
+                                    {
+                                        AsteroidGameManager.Instance.ChangePlayerHealth(collision.closingVelocity);
+                                    }
+                                }
 
-                            if(AreCollisionTags(a, b, "player", "asteroid"))
-                            {
-                                AsteroidGameManager.Instance.ChangePlayerHealth(collision.closingVelocity);
+
                             }
                         }
                     }
                 }
             }
         }
+        foreach(CollisionHull2D col in toRemove)
+        {
+            RemoveCollisionHull(col);
+            Destroy(col.gameObject);
+        }
+        toRemove.Clear();
     }
 
     private bool AreCollisionTags(CollisionHull2D a, CollisionHull2D b, string typeA, string typeB)
@@ -150,7 +161,7 @@ public class CollisionSystem : MonoBehaviour
     {
         if(!collisionHulls.Contains(col))
         {
-            collisionHulls.Add(col);
+            //collisionHulls.Add(col);
         }
     }
 

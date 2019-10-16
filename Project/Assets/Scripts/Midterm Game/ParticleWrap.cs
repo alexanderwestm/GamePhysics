@@ -4,14 +4,15 @@ using UnityEngine;
 
 public class ParticleWrap : MonoBehaviour
 {
-    Particle2D particle;
+    [SerializeField] Particle2D particle;
     Camera camera;
 
-    bool wrappingX, wrappingY;
+    [SerializeField] bool wrappingX, wrappingY;
     private void Start()
     {
         particle = GetComponent<Particle2D>();
         camera = Camera.main;
+        wrappingX = wrappingY = false;
     }
     private void Update()
     {

@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 1192763577040427963}
   - component: {fileID: 2095260694543280401}
   - component: {fileID: 4928457806541370620}
-  - component: {fileID: -3043286950908219529}
   - component: {fileID: 7471162106605093934}
+  - component: {fileID: -3043286950908219529}
   - component: {fileID: 4664196878545728590}
   m_Layer: 0
   m_Name: Medium_Asteroid_2
@@ -98,6 +98,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: -1
+--- !u!114 &7471162106605093934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5571446090119523694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b27572a99563564b858eb342b12902b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 1
+  smallAsteroid: {fileID: 1269950442963904178, guid: e61bbcd1ae296e04fbc4eec2cd70ad2f,
+    type: 3}
+  mediumAsteroids: []
 --- !u!114 &-3043286950908219529
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -124,22 +140,6 @@ MonoBehaviour:
   simulate: 1
   massInv: 0
   accelerationGravity: 0
---- !u!114 &7471162106605093934
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5571446090119523694}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b27572a99563564b858eb342b12902b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 1
-  smallAsteroid: {fileID: 1269950442963904178, guid: e61bbcd1ae296e04fbc4eec2cd70ad2f,
-    type: 3}
-  mediumAsteroids: []
 --- !u!114 &4664196878545728590
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -152,3 +152,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ade1650eb5924ac478e8077a14294381, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  particle: {fileID: 0}
+  wrappingX: 0
+  wrappingY: 0

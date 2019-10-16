@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 6855432292150298438}
   - component: {fileID: 4989081104476220566}
   - component: {fileID: 5462773937236825906}
-  - component: {fileID: -7855458069798598348}
   - component: {fileID: 4884596932304462647}
+  - component: {fileID: -7855458069798598348}
   - component: {fileID: -3725605861705580189}
   m_Layer: 0
   m_Name: Large_Asteroid
@@ -98,6 +98,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: -1
+--- !u!114 &4884596932304462647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4223413577123580766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b27572a99563564b858eb342b12902b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 2
+  smallAsteroid: {fileID: 0}
+  mediumAsteroids:
+  - {fileID: 3203071944194750710, guid: b2687e2f8fb0d7a4aa37f6cb2ec05ffd, type: 3}
+  - {fileID: 5571446090119523694, guid: 1077c0f3ebfe29e4c89ba6017eca1139, type: 3}
 --- !u!114 &-7855458069798598348
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -124,23 +141,6 @@ MonoBehaviour:
   simulate: 1
   massInv: 0
   accelerationGravity: 0
---- !u!114 &4884596932304462647
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4223413577123580766}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b27572a99563564b858eb342b12902b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 2
-  smallAsteroid: {fileID: 0}
-  mediumAsteroids:
-  - {fileID: 3203071944194750710, guid: b2687e2f8fb0d7a4aa37f6cb2ec05ffd, type: 3}
-  - {fileID: 5571446090119523694, guid: 1077c0f3ebfe29e4c89ba6017eca1139, type: 3}
 --- !u!114 &-3725605861705580189
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -153,3 +153,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ade1650eb5924ac478e8077a14294381, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  particle: {fileID: 0}
+  wrappingX: 0
+  wrappingY: 0

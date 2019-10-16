@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class AsteroidGameManager : MonoBehaviour
 {
     private static AsteroidGameManager _instance;
     public static AsteroidGameManager Instance { get { return _instance; } }
 
-    private float score;
+    public float score;
     private float playerHealth = 100;
     [SerializeField] float playerLives;
     private bool playerDead;
@@ -27,18 +28,24 @@ public class AsteroidGameManager : MonoBehaviour
             _instance = this;
         }
         score = 0;
-        playerHealth = 0;
+        playerHealth = 100;
+        DontDestroyOnLoad(this);
     }
     private void Update()
     {
-        healthBar.value = playerHealth;
-        if(!playerDead)
+        if(healthBar != null)
+        {
+            healthBar.value = playerHealth;
+        }
+        if (!playerDead)
         {
             scoreText.text = "Score: " + score;
         }
-        else if(playerLives >= 0)
+        else if(playerLives > 0)
         {
             playerHealth = 100;
+            playerDead = false;
+            playerLives--;
             GameObject.Find("Player").GetComponent<Particle2D>().ReInit();
             int i = 0;
             while (i < playerLives)
@@ -49,8 +56,12 @@ public class AsteroidGameManager : MonoBehaviour
             while (i < heartImages.Count)
             {
                 heartImages[i].sprite = emptyHeart;
-                --i;
+                ++i;
             }
+        }
+        else if(playerLives <= 0)
+        {
+            SceneManager.LoadScene("EndScene");
         }
     }
 
@@ -66,10 +77,10 @@ public class AsteroidGameManager : MonoBehaviour
 
     public void ChangePlayerHealth(float separatingVelocity)
     {
-        playerHealth += separatingVelocity;
+        playerHealth -= Mathf.Sign(separatingVelocity) * separatingVelocity * 3;
         if(playerHealth <= 0)
         {
-            playerLives--;
+            playerDead = true;
         }
     }
 }

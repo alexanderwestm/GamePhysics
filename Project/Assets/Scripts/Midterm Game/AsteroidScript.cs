@@ -17,21 +17,25 @@ public class AsteroidScript : MonoBehaviour
 
     private float upperBoundSpeed = 250;
     private float lowerBoundSpeed = 100;
-    // Update is called once per frame
-    private void Start()
+    Vector3 directionToPlayer;
+
+    private void Awake()
     {
+        Vector2 direction = new Vector2(Mathf.Cos(transform.rotation.z), Mathf.Sin(transform.rotation.z));
+        float speed = Random.Range(lowerBoundSpeed, upperBoundSpeed);
+        GetComponent<Particle2D>().AddForce(direction * speed);
         CollisionSystem.Instance.AddCollisionHull(GetComponent<CollisionHull2D>());
     }
 
     public void Remove()
     {
-        GameObject asteroid;
         switch(type)
         {
             case AsteroidType.SMALL:
             {
                 // award a large amount of points
                 AsteroidGameManager.Instance.ChangeScore(1000);
+                SpawnAsteroids.Instance.numAsteroids--;
                 break;
             }
             case AsteroidType.MEDIUM:
@@ -41,11 +45,10 @@ public class AsteroidScript : MonoBehaviour
                 AsteroidGameManager.Instance.ChangeScore(500);
                 for(int i = 0; i < 3; ++i)
                 {
-                    asteroid = Instantiate(smallAsteroid, transform.position, Random.rotation);
-                    Vector2 direction = new Vector2(Mathf.Cos(asteroid.transform.rotation.z), Mathf.Sin(asteroid.transform.rotation.z));
-                    float speed = Random.Range(lowerBoundSpeed, upperBoundSpeed);
-                    asteroid.GetComponent<Particle2D>().AddForce(direction * speed);
+                    Instantiate(smallAsteroid, transform.position, Random.rotation);
+                    SpawnAsteroids.Instance.numAsteroids++;
                 }
+                SpawnAsteroids.Instance.numAsteroids--;
                 break;
             }
             case AsteroidType.LARGE:
@@ -53,14 +56,13 @@ public class AsteroidScript : MonoBehaviour
                 // award a small amount of points
                 // split into 2 medium ones
                 AsteroidGameManager.Instance.ChangeScore(250);
-                for(int i = 0; i < 2; ++i)
+                for (int i = 0; i < 2; ++i)
                 {
                     int randomNum = Random.Range(0, 2);
-                    asteroid = Instantiate(mediumAsteroids[randomNum], transform.position, Random.rotation);
-                    Vector2 direction = new Vector2(Mathf.Cos(asteroid.transform.rotation.z), Mathf.Sin(asteroid.transform.rotation.z));
-                    float speed = Random.Range(lowerBoundSpeed, upperBoundSpeed);
-                    asteroid.GetComponent<Particle2D>().AddForce(direction * speed);
+                    Instantiate(mediumAsteroids[randomNum], transform.position, Random.rotation);
+                    SpawnAsteroids.Instance.numAsteroids++;
                 }
+                SpawnAsteroids.Instance.numAsteroids--;
                 break;
             }
         }
