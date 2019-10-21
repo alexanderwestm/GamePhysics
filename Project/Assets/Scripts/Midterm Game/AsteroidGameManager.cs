@@ -61,7 +61,10 @@ public class AsteroidGameManager : MonoBehaviour
         }
         else if(playerLives <= 0)
         {
-            SceneManager.LoadScene("EndScene");
+            if (SceneManager.GetActiveScene().name.ToLower() != "endscene")
+            {
+                SceneManager.LoadScene("EndScene");
+            }
         }
     }
 
