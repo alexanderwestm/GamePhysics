@@ -37,12 +37,12 @@ public class Particle3D : MonoBehaviour
     public Vector3 position;
     public Vector3 velocity = Vector3.zero;
     [SerializeField] private Vector3 acceleration = Vector3.zero;
-    public Quaternion rotation = Quaternion.identity;
+    public PhysicsQuaternion rotation = PhysicsQuaternion.identity;
     [SerializeField] private Vector3 angularVelocity = Vector3.zero;
     [SerializeField] private Vector3 angularAcceleration = Vector3.zero;
     [SerializeField] private float startMass;
     [SerializeField] private InertiaBody inertiaBody;
-    [SerializeField] private float totalTorque = 0.0f;
+    [SerializeField] private Vector3 totalTorque = Vector3.zero;
     [SerializeField] private UpdateType updateType;
     [SerializeField] private ForceType forceType;
     [SerializeField] private bool simulate = false;
@@ -63,7 +63,7 @@ public class Particle3D : MonoBehaviour
     void Start()
     {
         position = transform.position;
-        rotation = transform.rotation;
+        rotation = new PhysicsQuaternion(transform.rotation);
         SetMass(startMass);
         //SetMomentOfInertia(inertiaBody);
         centerOfMassLocal = new Vector3(transform.localScale.x / 2f, transform.localScale.y / 2f, transform.localScale.z);
@@ -74,15 +74,15 @@ public class Particle3D : MonoBehaviour
 
     public void ReInit()
     {
-        position = Vector2.zero;
-        velocity = Vector2.zero;
-        acceleration = Vector2.zero;
-        rotation = 0;
-        angularVelocity = 0;
-        angularAcceleration = 0;
+        position = Vector3.zero;
+        velocity = Vector3.zero;
+        acceleration = Vector3.zero;
+        rotation = PhysicsQuaternion.identity;
+        angularVelocity = Vector3.zero;
+        angularAcceleration = Vector3.zero;
 
-        totalForce = Vector2.zero;
-        totalTorque = 0;
+        totalForce = Vector3.zero;
+        totalTorque = Vector3.zero;
     }
 
     // Update is called once per frame
@@ -95,7 +95,7 @@ public class Particle3D : MonoBehaviour
         if (simulate)
         {
             transform.position = position;
-            transform.rotation = rotation;
+            transform.rotation = rotation.GetQuaternion();
 
             switch (updateType)
             {
@@ -166,7 +166,7 @@ public class Particle3D : MonoBehaviour
         else
         {
             position = transform.position;
-            rotation = transform.rotation;
+            rotation = new PhysicsQuaternion(transform.rotation);
         }
     }
 
@@ -263,8 +263,8 @@ public class Particle3D : MonoBehaviour
         {
             relativePoint = pointApplied - centerOfMassGlobal;
         }
-        float torqueToApply = relativePoint.x * force.y - relativePoint.y * force.x;
-        totalTorque += torqueToApply;
+        //float torqueToApply = relativePoint.x * force.y - relativePoint.y * force.x;
+        //totalTorque += torqueToApply;
     }
 
     private void UpdatePositionEulerExplicit(float dt)
@@ -283,15 +283,11 @@ public class Particle3D : MonoBehaviour
 
     private void UpdateRotationEulerExplicit(float dt)
     {
-        //rotation += angularVelocity * dt;
-        //rotation %= 360;
-        //angularVelocity += angularAcceleration * dt;
-        Quaternion angularVelQuat = new Quaternion();
-        angularVelQuat.w = 0;
-        angularVelQuat.x = angularVelocity.x;
-        angularVelQuat.y = angularVelocity.y;
-        angularVelQuat.z = angularVelocity.z;
-        rotation += //dt * .5f * angularVelocity * rotation;
+        PhysicsQuaternion angularVelQuat = new PhysicsQuaternion(angularVelocity.x, angularVelocity.y, angularVelocity.z, 0);
+        rotation += .5f * angularVelQuat * rotation * dt;
+        rotation.Normalize();
+
+        angularVelocity += angularAcceleration * dt;
     }
 
     private void UpdateRotationKinematic(float dt)
@@ -310,6 +306,6 @@ public class Particle3D : MonoBehaviour
     private void UpdateAngularAcceleration()
     {
         angularAcceleration = totalTorque * inertiaInv;
-        totalTorque = 0;
+        totalTorque = Vector3.zero;
     }
 }
