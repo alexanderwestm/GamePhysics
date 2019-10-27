@@ -295,6 +295,9 @@ public class Particle3D : MonoBehaviour
         //rotation += angularVelocity * dt + .5f * angularAcceleration * dt * dt;
         //rotation %= 360;
         //angularVelocity += angularAcceleration * dt;
+        PhysicsQuaternion velQuat = new PhysicsQuaternion(angularVelocity.x, angularVelocity.y, angularVelocity.z, 0), accQuat = new PhysicsQuaternion(angularAcceleration.x, angularAcceleration.y, angularAcceleration.z, 0);
+        rotation += .5f * velQuat * rotation * dt + (accQuat * rotation + .5f * velQuat * velQuat * rotation) * dt * dt;
+        angularVelocity += angularAcceleration * dt;
     }
 
     private void UpdateAcceleration()
