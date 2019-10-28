@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public struct PhysicsQuaternion
 {
     public float w;
@@ -92,5 +93,20 @@ public struct PhysicsQuaternion
     public Quaternion GetQuaternion()
     {
         return new Quaternion(x, y, z, w);
+    }
+
+    public Matrix4x4 ConvertToMatrix()
+    {
+        Matrix4x4 returnMatrix = new Matrix4x4();
+
+        Vector4 col1, col2, col3, col4;
+
+        // slide 52
+        col1 = new Vector4(w * w + x * x - y * y - z * z, 2 * (x * y + w * z), 2 * (x * z - w * y), 0);
+        col2 = new Vector4(2 * (x * y - w * z), w * w - x * x + y * y - z * z, 2 * (y * z + w * x), 0);
+        col3 = new Vector4(2 * ( x * z + w * y), 2 * (y * z - w * x), w * w - x * x - y * y + z * z, 0);
+        col4 = new Vector4(0, 0, 0, 1);
+
+        return new Matrix4x4(col1, col2, col3, col4);
     }
 }

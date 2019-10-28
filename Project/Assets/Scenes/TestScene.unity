@@ -325,18 +325,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac31162d50c0ec34ab478b6972e1a9a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startMass: 1
+  massInv: 0
   position: {x: 0, y: 0, z: 0}
   velocity: {x: 0, y: 0, z: 0}
   acceleration: {x: 0, y: 0, z: 0}
+  rotation:
+    w: 0
+    x: 0
+    y: 0
+    z: 0
   angularVelocity: {x: 0, y: 0, z: 0}
-  angularAcceleration: {x: 0, y: 0, z: 100}
-  startMass: 1
+  angularAcceleration: {x: 0, y: 0, z: 0}
   inertiaBody: -1
   totalTorque: {x: 0, y: 0, z: 0}
-  updateType: 0
+  updateType: 1
   forceType: -1
   simulate: 1
-  massInv: 0
   accelerationGravity: 0
 --- !u!23 &2010698406
 MeshRenderer:
