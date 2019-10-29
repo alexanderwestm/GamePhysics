@@ -307,7 +307,9 @@ public class Particle3D : MonoBehaviour
         //rotation %= 360;
         //angularVelocity += angularAcceleration * dt;
         PhysicsQuaternion velQuat = new PhysicsQuaternion(angularVelocity.x, angularVelocity.y, angularVelocity.z, 0), accQuat = new PhysicsQuaternion(angularAcceleration.x, angularAcceleration.y, angularAcceleration.z, 0);
-        rotation += .5f * velQuat * rotation * dt + (accQuat * rotation + .5f * velQuat * velQuat * rotation) * dt * dt;
+        //rotation += .5f * velQuat * rotation * dt + (accQuat * rotation + .5f * velQuat * velQuat * rotation) * dt * dt;
+        rotation += velQuat * rotation * dt * .5f + accQuat * rotation * dt * dt * .25f - rotation * angularVelocity.sqrMagnitude * dt * dt * .125f;
+        rotation.Normalize();
         angularVelocity += angularAcceleration * dt;
     }
 
@@ -319,7 +321,7 @@ public class Particle3D : MonoBehaviour
 
     private void UpdateAngularAcceleration()
     {
-        angularAcceleration = totalTorque * inertiaInv;
+        //angularAcceleration = totalTorque * inertiaInv;
         totalTorque = Vector3.zero;
     }
 }

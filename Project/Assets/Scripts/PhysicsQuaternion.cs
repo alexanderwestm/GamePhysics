@@ -23,6 +23,14 @@ public struct PhysicsQuaternion
         this.z = z;
     }
 
+    public PhysicsQuaternion(Vector3 vector, float w)
+    {
+        this.w = w;
+        x = vector.x;
+        y = vector.y;
+        z = vector.z;
+    }
+
     public PhysicsQuaternion(Quaternion quaternion)
     {
         w = quaternion.w;
@@ -78,6 +86,21 @@ public struct PhysicsQuaternion
         returnQuat.x = a.x + b.x;
         returnQuat.y = a.y + b.y;
         returnQuat.z = a.z + b.z;
+        return returnQuat;
+    }
+
+    public static PhysicsQuaternion operator-(PhysicsQuaternion a, PhysicsQuaternion b)
+    {
+        return a + -b;
+    }
+
+    public static PhysicsQuaternion operator-(PhysicsQuaternion a)
+    {
+        PhysicsQuaternion returnQuat = new PhysicsQuaternion();
+        returnQuat.x = -a.x;
+        returnQuat.y = -a.y;
+        returnQuat.z = -a.z;
+        returnQuat.w = -a.w;
         return returnQuat;
     }
 
