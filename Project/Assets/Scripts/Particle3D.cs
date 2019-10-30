@@ -54,6 +54,8 @@ public class Particle3D : MonoBehaviour
     [Header("Torque")]
     [SerializeField] private InertiaBody inertiaBody;
     [SerializeField] private Vector3 totalTorque = Vector3.zero;
+    [SerializeField] private Vector3 torquePointApplied = Vector3.zero;
+    [SerializeField] private Vector3 torqueForce = Vector3.zero;
 
     [Header("Settings")]
     [SerializeField] private UpdateType updateType;
@@ -173,7 +175,7 @@ public class Particle3D : MonoBehaviour
                 }
                 case ForceType.TORQUE:
                 {
-                    AddTorque(new Vector3(1, 1, 1), transform.position + new Vector3(.9f, 0, 0), false);
+                    AddTorque(torqueForce, centerOfMassGlobal + torquePointApplied);
                     break;
                 }
             }
@@ -216,7 +218,7 @@ public class Particle3D : MonoBehaviour
         {
             case InertiaBody.BOX:
             {
-                float oneSixth = 1 / 6;
+                float oneSixth = 1f / 6f;
                 float side = hitboxSize.x;
                 float numToSet = oneSixth * mass * side * side;
                 inertia.SetRow(0, new Vector4(numToSet, 0, 0, 0));
@@ -237,7 +239,7 @@ public class Particle3D : MonoBehaviour
             }
             case InertiaBody.CUBE:
             {
-                float oneTwelfth = 1 / 12;
+                float oneTwelfth = 1f / 12f;
                 float first = oneTwelfth * mass * (hitboxSize.y * hitboxSize.y + hitboxSize.z * hitboxSize.z);
                 float second = oneTwelfth * mass * (hitboxSize.z * hitboxSize.z + hitboxSize.x * hitboxSize.x);
                 float third = oneTwelfth * mass * (hitboxSize.x * hitboxSize.x + hitboxSize.y * hitboxSize.y);
@@ -250,7 +252,7 @@ public class Particle3D : MonoBehaviour
             {
                 float radius = hitboxSize.x * .5f;
                 float height = hitboxSize.y * .5f;
-                float oneTwelfth = 1 / 12;
+                float oneTwelfth = 1f / 12f;
                 float firstSecond = oneTwelfth * mass * (3 * radius * radius + height * height);
                 float third = .5f * mass * radius * radius;
                 inertia.SetRow(0, new Vector4(firstSecond, 0, 0, 0));
@@ -260,7 +262,7 @@ public class Particle3D : MonoBehaviour
             }
             case InertiaBody.HOLLOW_BOX:
             {
-                float fiveThirds = 5 / 3;
+                float fiveThirds = 5f / 3f;
                 float first = fiveThirds * mass * (hitboxSize.y * hitboxSize.y + hitboxSize.z * hitboxSize.z);
                 float second = fiveThirds * mass * (hitboxSize.z * hitboxSize.z + hitboxSize.x * hitboxSize.x);
                 float third = fiveThirds * mass * (hitboxSize.x * hitboxSize.x + hitboxSize.y * hitboxSize.y);
@@ -271,7 +273,7 @@ public class Particle3D : MonoBehaviour
             }
             case InertiaBody.HOLLOW_CUBE:
             {
-                float fiveThirdsOverTwo = (5/3) * .5f;
+                float fiveThirdsOverTwo = (5f/3f) * .5f;
                 float side = hitboxSize.x;
                 float numToSet = fiveThirdsOverTwo * mass * side * side;
                 inertia.SetRow(0, new Vector4(numToSet, 0, 0, 0));
@@ -283,7 +285,7 @@ public class Particle3D : MonoBehaviour
             {
                 float radius = hitboxSize.x * .5f;
                 // 2/3mr^2
-                float numToSet = 2 / 3 * mass * radius * radius;
+                float numToSet = 2f / 3f * mass * radius * radius;
                 inertia.SetRow(0, new Vector4(numToSet, 0, 0, 0));
                 inertia.SetRow(1, new Vector4(0, numToSet, 0, 0));
                 inertia.SetRow(2, new Vector4(0, 0, numToSet, 0));
@@ -304,7 +306,11 @@ public class Particle3D : MonoBehaviour
                 break;
             }
         }
-        inertiaInv = inertia.inverse;
+
+        inertiaInv.SetRow(0, inertia.GetColumn(0));
+        inertiaInv.SetRow(1, inertia.GetColumn(1));
+        inertiaInv.SetRow(2, inertia.GetColumn(2));
+        inertiaInv.SetRow(3, inertia.GetColumn(3));
     }
 
     public void SetMass(float newMass)
@@ -340,26 +346,27 @@ public class Particle3D : MonoBehaviour
         worldTransformMatrix.SetColumn(2, rotationMatrix.GetColumn(2));
         worldTransformMatrix.SetColumn(3, positionVector);
 
-        worldTransformMatrixInverse.SetRow(0, rotationMatrix.GetColumn(0));
-        worldTransformMatrixInverse.SetRow(1, rotationMatrix.GetColumn(1));
-        worldTransformMatrixInverse.SetRow(2, rotationMatrix.GetColumn(2));
-        worldTransformMatrixInverse.SetRow(3, positionVector);
-    }
+        worldTransformMatrixInverse.SetRow(0, worldTransformMatrix.GetColumn(0));
+        worldTransformMatrixInverse.SetRow(1, worldTransformMatrix.GetColumn(1));
+        worldTransformMatrixInverse.SetRow(2, worldTransformMatrix.GetColumn(2));
+        worldTransformMatrixInverse.SetRow(3, worldTransformMatrix.GetColumn(3));
 
-    public void AddTorque(Vector3 force, Vector3 pointApplied, bool local)
+        worldInertiaInv = worldTransformMatrixInverse * inertiaInv * worldTransformMatrix;
+
+        worldInertia.SetRow(0, worldInertiaInv.GetColumn(0));
+        worldInertia.SetRow(1, worldInertiaInv.GetColumn(1));
+        worldInertia.SetRow(2, worldInertiaInv.GetColumn(2));
+        worldInertia.SetRow(3, worldInertiaInv.GetColumn(3));
+    }
+    
+    // assumed always global
+    public void AddTorque(Vector3 force, Vector3 pointApplied)
     {
         // Formula: https://forum.unity.com/threads/how-to-calculate-how-much-torque-will-rigidbody-addforceatposition-add.287164/#post-1927110
-        Vector2 relativePoint;
-        if (local)
-        {
-            relativePoint = pointApplied - centerOfMassLocal;
-        }
-        else
-        {
-            relativePoint = pointApplied - centerOfMassGlobal;
-        }
+        Vector3 relativePoint = pointApplied - centerOfMassGlobal;
         //float torqueToApply = relativePoint.x * force.y - relativePoint.y * force.x;
         //totalTorque += torqueToApply;
+        totalTorque += Vector3.Cross(relativePoint, force);
     }
 
     private void UpdatePositionEulerExplicit(float dt)
@@ -406,7 +413,7 @@ public class Particle3D : MonoBehaviour
     private void UpdateAngularAcceleration()
     {
         //angularAcceleration = totalTorque * inertiaInv;
-        angularAcceleration = inertiaInv.MultiplyVector(totalTorque);
+        angularAcceleration = worldInertiaInv.MultiplyVector(totalTorque);
         totalTorque = Vector3.zero;
     }
 }
