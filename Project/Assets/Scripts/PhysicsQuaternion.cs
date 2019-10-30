@@ -118,7 +118,7 @@ public struct PhysicsQuaternion
         return new Quaternion(x, y, z, w);
     }
 
-    public Matrix4x4 ConvertToMatrix()
+    public Matrix4x4 GetRotationMatrix()
     {
         Matrix4x4 returnMatrix = new Matrix4x4();
 

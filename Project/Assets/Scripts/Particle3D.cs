@@ -27,11 +27,14 @@ public class Particle3D : MonoBehaviour
     public enum InertiaBody
     {
         NONE = -1,
-        CIRCLE,
-        RECTANGLE,
-        ROD,
-        CIRCULAR_RING,
-        SQUARE
+        SPHERE,
+        HOLLOW_SPHERE,
+        BOX,
+        CUBE,
+        HOLLOW_BOX,
+        HOLLOW_CUBE,
+        CYLINDER,
+        CONE
     }
 
     [Header("Mass")]
@@ -61,8 +64,14 @@ public class Particle3D : MonoBehaviour
     private float mass;
     private Vector3 totalForce = Vector2.zero;
     private Vector3 forceOfGravity;
+
     private Matrix4x4 inertia;
     private Matrix4x4 inertiaInv;
+    private Matrix4x4 worldInertia;
+    private Matrix4x4 worldInertiaInv;
+
+    private Matrix4x4 worldTransformMatrix;
+    private Matrix4x4 worldTransformMatrixInverse;
 
     public Vector3 centerOfMassLocal { get; private set; }
     public Vector3 centerOfMassGlobal { get; private set; }
@@ -76,6 +85,7 @@ public class Particle3D : MonoBehaviour
         rotation = new PhysicsQuaternion(transform.rotation);
         SetMass(startMass);
         SetMomentOfInertia(inertiaBody);
+        worldTransformMatrix = new Matrix4x4();
         centerOfMassLocal = new Vector3(transform.localScale.x / 2f, transform.localScale.y / 2f, transform.localScale.z / 2f);
 
         forceOfGravity = ForceGenerator.GenerateForce_gravity(Vector3.up, accelerationGravity, mass);
@@ -103,9 +113,8 @@ public class Particle3D : MonoBehaviour
 
         if (simulate)
         {
-            transform.position = position;
-            transform.rotation = rotation.GetQuaternion();
-            centerOfMassGlobal = transform.position;
+            UpdateParticleData();
+            UpdateWorldMatrix();
 
             switch (updateType)
             {
@@ -181,12 +190,10 @@ public class Particle3D : MonoBehaviour
 
     private void SetMomentOfInertia(InertiaBody body)
     {
-        if (InertiaBody.NONE == body)
-        {
-            inertia = Matrix4x4.identity;
-            inertiaInv = Matrix4x4.identity;
-            return;
-        }
+        inertia = Matrix4x4.identity;
+        inertiaInv = Matrix4x4.identity;
+        if (InertiaBody.NONE == body) return;
+
         Vector3 hitboxSize = Vector3.zero;
         MeshFilter meshFilter = gameObject.GetComponent<MeshFilter>();
         SpriteRenderer renderer = GetComponent<SpriteRenderer>();
@@ -207,43 +214,97 @@ public class Particle3D : MonoBehaviour
 
         switch (body)
         {
-            case InertiaBody.RECTANGLE:
+            case InertiaBody.BOX:
             {
-                //float dx = hitboxSize.x, dy = hitboxSize.y;
-                //inertia = 1f / 12f * mass * (dx * dx + dy * dy);
+                float oneSixth = 1 / 6;
+                float side = hitboxSize.x;
+                float numToSet = oneSixth * mass * side * side;
+                inertia.SetRow(0, new Vector4(numToSet, 0, 0, 0));
+                inertia.SetRow(1, new Vector4(0, numToSet, 0, 0));
+                inertia.SetRow(2, new Vector4(0, 0, numToSet, 0));
                 break;
             }
-            case InertiaBody.CIRCLE:
+            case InertiaBody.CONE:
             {
-                //float radius = hitboxSize.x;
-                //inertia = .5f * mass * radius * radius;
+                float radius = hitboxSize.x * .5f;
+                float height = hitboxSize.y;
+                float firstSecond = .6f * mass * height * height + .15f * mass * radius * radius;
+                float third = .3f * mass * radius * radius;
+                inertia.SetRow(0, new Vector4(firstSecond, 0, 0, 0));
+                inertia.SetRow(1, new Vector4(0, firstSecond, 0, 0));
+                inertia.SetRow(2, new Vector4(0, 0, third, 0));
                 break;
             }
-            case InertiaBody.ROD:
+            case InertiaBody.CUBE:
             {
-                //float length = hitboxSize.x;
-                //inertia = 1 / 12f * mass * length * length;
+                float oneTwelfth = 1 / 12;
+                float first = oneTwelfth * mass * (hitboxSize.y * hitboxSize.y + hitboxSize.z * hitboxSize.z);
+                float second = oneTwelfth * mass * (hitboxSize.z * hitboxSize.z + hitboxSize.x * hitboxSize.x);
+                float third = oneTwelfth * mass * (hitboxSize.x * hitboxSize.x + hitboxSize.y * hitboxSize.y);
+                inertia.SetRow(0, new Vector4(first, 0, 0, 0));
+                inertia.SetRow(1, new Vector4(0, second, 0, 0));
+                inertia.SetRow(2, new Vector4(0, 0, third, 0));
                 break;
             }
-            case InertiaBody.CIRCULAR_RING:
+            case InertiaBody.CYLINDER:
             {
-                //float outerRadius = hitboxSize.x;
-                //float innerRadius = outerRadius * .75f;
-                //float t = outerRadius - innerRadius;
-                //float r = t / 2;
-                //
-                //inertia = Mathf.PI * r * r * r * t;
-                //
+                float radius = hitboxSize.x * .5f;
+                float height = hitboxSize.y * .5f;
+                float oneTwelfth = 1 / 12;
+                float firstSecond = oneTwelfth * mass * (3 * radius * radius + height * height);
+                float third = .5f * mass * radius * radius;
+                inertia.SetRow(0, new Vector4(firstSecond, 0, 0, 0));
+                inertia.SetRow(1, new Vector4(0, firstSecond, 0, 0));
+                inertia.SetRow(2, new Vector4(0, 0, third, 0));
                 break;
             }
-            case InertiaBody.SQUARE:
+            case InertiaBody.HOLLOW_BOX:
             {
-                //float dim = hitboxSize.x;
-                //inertia = (1f / 3f) * mass * dim * dim;
+                float fiveThirds = 5 / 3;
+                float first = fiveThirds * mass * (hitboxSize.y * hitboxSize.y + hitboxSize.z * hitboxSize.z);
+                float second = fiveThirds * mass * (hitboxSize.z * hitboxSize.z + hitboxSize.x * hitboxSize.x);
+                float third = fiveThirds * mass * (hitboxSize.x * hitboxSize.x + hitboxSize.y * hitboxSize.y);
+                inertia.SetRow(0, new Vector4(first, 0, 0, 0));
+                inertia.SetRow(1, new Vector4(0, second, 0, 0));
+                inertia.SetRow(2, new Vector4(0, 0, third, 0));
+                break;
+            }
+            case InertiaBody.HOLLOW_CUBE:
+            {
+                float fiveThirdsOverTwo = (5/3) * .5f;
+                float side = hitboxSize.x;
+                float numToSet = fiveThirdsOverTwo * mass * side * side;
+                inertia.SetRow(0, new Vector4(numToSet, 0, 0, 0));
+                inertia.SetRow(1, new Vector4(0, numToSet, 0, 0));
+                inertia.SetRow(2, new Vector4(0, 0, numToSet, 0));
+                break;
+            }
+            case InertiaBody.HOLLOW_SPHERE:
+            {
+                float radius = hitboxSize.x * .5f;
+                // 2/3mr^2
+                float numToSet = 2 / 3 * mass * radius * radius;
+                inertia.SetRow(0, new Vector4(numToSet, 0, 0, 0));
+                inertia.SetRow(1, new Vector4(0, numToSet, 0, 0));
+                inertia.SetRow(2, new Vector4(0, 0, numToSet, 0));
+                break;
+            }
+            case InertiaBody.SPHERE:
+            {
+                float radius = hitboxSize.x * .5f;
+                // 2/5mr^2
+                float numToSet = .4f * mass * radius * radius;
+                inertia.SetRow(0, new Vector4(numToSet, 0, 0, 0));
+                inertia.SetRow(1, new Vector4(0, numToSet, 0, 0));
+                inertia.SetRow(2, new Vector4(0, 0, numToSet, 0));
+                break;
+            }
+            default:
+            {
                 break;
             }
         }
-        //inertiaInv = 1 / inertia;
+        inertiaInv = inertia.inverse;
     }
 
     public void SetMass(float newMass)
@@ -260,6 +321,29 @@ public class Particle3D : MonoBehaviour
     public void AddForce(Vector3 force)
     {
         totalForce += force;
+    }
+
+    private void UpdateParticleData()
+    {
+        transform.position = position;
+        transform.rotation = rotation.GetQuaternion();
+        centerOfMassGlobal = transform.position;
+    }
+
+    private void UpdateWorldMatrix()
+    {
+        Matrix4x4 rotationMatrix = rotation.GetRotationMatrix();
+        Vector4 positionVector = new Vector4(centerOfMassGlobal.x, centerOfMassGlobal.y, centerOfMassGlobal.z, 1);
+
+        worldTransformMatrix.SetColumn(0, rotationMatrix.GetColumn(0));
+        worldTransformMatrix.SetColumn(1, rotationMatrix.GetColumn(1));
+        worldTransformMatrix.SetColumn(2, rotationMatrix.GetColumn(2));
+        worldTransformMatrix.SetColumn(3, positionVector);
+
+        worldTransformMatrixInverse.SetRow(0, rotationMatrix.GetColumn(0));
+        worldTransformMatrixInverse.SetRow(1, rotationMatrix.GetColumn(1));
+        worldTransformMatrixInverse.SetRow(2, rotationMatrix.GetColumn(2));
+        worldTransformMatrixInverse.SetRow(3, positionVector);
     }
 
     public void AddTorque(Vector3 force, Vector3 pointApplied, bool local)
@@ -322,6 +406,7 @@ public class Particle3D : MonoBehaviour
     private void UpdateAngularAcceleration()
     {
         //angularAcceleration = totalTorque * inertiaInv;
+        angularAcceleration = inertiaInv.MultiplyVector(totalTorque);
         totalTorque = Vector3.zero;
     }
 }
