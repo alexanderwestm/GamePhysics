@@ -385,8 +385,7 @@ public class Particle3D : MonoBehaviour
 
     private void UpdateRotationEulerExplicit(float dt)
     {
-        PhysicsQuaternion angularVelQuat = new PhysicsQuaternion(angularVelocity.x, angularVelocity.y, angularVelocity.z, 0);
-        rotation += .5f * angularVelQuat * rotation * dt;
+        rotation += .5f * angularVelocity * rotation * dt;
         rotation.Normalize();
 
         angularVelocity += angularAcceleration * dt;
@@ -394,13 +393,10 @@ public class Particle3D : MonoBehaviour
 
     private void UpdateRotationKinematic(float dt)
     {
-        //rotation += angularVelocity * dt + .5f * angularAcceleration * dt * dt;
-        //rotation %= 360;
-        //angularVelocity += angularAcceleration * dt;
-        PhysicsQuaternion velQuat = new PhysicsQuaternion(angularVelocity.x, angularVelocity.y, angularVelocity.z, 0), accQuat = new PhysicsQuaternion(angularAcceleration.x, angularAcceleration.y, angularAcceleration.z, 0);
         //rotation += .5f * velQuat * rotation * dt + (accQuat * rotation + .5f * velQuat * velQuat * rotation) * dt * dt;
-        rotation += velQuat * rotation * dt * .5f + accQuat * rotation * dt * dt * .25f - rotation * angularVelocity.sqrMagnitude * dt * dt * .125f;
+        rotation += angularVelocity * rotation * dt * .5f + angularAcceleration * rotation * dt * dt * .25f - rotation * angularVelocity.sqrMagnitude * dt * dt * .125f;
         rotation.Normalize();
+
         angularVelocity += angularAcceleration * dt;
     }
 

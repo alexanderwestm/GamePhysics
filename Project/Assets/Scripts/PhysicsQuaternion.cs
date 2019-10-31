@@ -41,7 +41,19 @@ public struct PhysicsQuaternion
 
     public static PhysicsQuaternion operator*(PhysicsQuaternion quat, Vector3 vec)
     {
-        return new PhysicsQuaternion();
+        PhysicsQuaternion returnQuat = new PhysicsQuaternion();
+
+        Vector3 vector = Vector3.zero;
+        Vector3 quatVector = new Vector3(quat.x, quat.y, quat.z);
+
+        vector = quat.w * vec + Vector3.Cross(quatVector, vec);
+
+        returnQuat.w = -Vector3.Dot(quatVector, vec);
+        returnQuat.x = vector.x;
+        returnQuat.y = vector.y;
+        returnQuat.z = vector.z;
+
+        return returnQuat;
     }
 
     public static PhysicsQuaternion operator*(Vector3 vec, PhysicsQuaternion quat)
@@ -63,7 +75,7 @@ public struct PhysicsQuaternion
         return scalar * quat;
     }
 
-    public static PhysicsQuaternion operator *(PhysicsQuaternion a, PhysicsQuaternion b)
+    public static PhysicsQuaternion operator*(PhysicsQuaternion a, PhysicsQuaternion b)
     {
         PhysicsQuaternion returnQuat = new PhysicsQuaternion();
         Vector3 vector = Vector3.zero;
