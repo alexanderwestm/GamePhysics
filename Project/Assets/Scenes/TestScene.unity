@@ -337,10 +337,10 @@ MonoBehaviour:
     z: 0
   angularVelocity: {x: 0, y: 0, z: 0}
   angularAcceleration: {x: 0, y: 0, z: 0}
-  inertiaBody: 7
+  inertiaBody: 3
   totalTorque: {x: 0, y: 0, z: 0}
-  torquePointApplied: {x: 0, y: 1, z: 1}
-  torqueForce: {x: 1, y: 1, z: 1}
+  torquePointApplied: {x: -0.5, y: 0.5, z: -0.5}
+  torqueForce: {x: 0, y: 0, z: 1}
   updateType: 1
   forceType: 7
   simulate: 1
