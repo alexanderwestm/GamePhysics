@@ -346,17 +346,15 @@ public class Particle3D : MonoBehaviour
         worldTransformMatrix.SetColumn(2, rotationMatrix.GetColumn(2));
         worldTransformMatrix.SetColumn(3, positionVector);
 
-        worldTransformMatrixInverse.SetRow(0, worldTransformMatrix.GetColumn(0));
-        worldTransformMatrixInverse.SetRow(1, worldTransformMatrix.GetColumn(1));
-        worldTransformMatrixInverse.SetRow(2, worldTransformMatrix.GetColumn(2));
-        worldTransformMatrixInverse.SetRow(3, worldTransformMatrix.GetColumn(3));
+        worldTransformMatrixInverse = worldTransformMatrix.transpose;
+        worldTransformMatrixInverse.SetColumn(3, -positionVector);
 
         worldInertiaInv = worldTransformMatrixInverse * inertiaInv * worldTransformMatrix;
-
-        worldInertia.SetRow(0, worldInertiaInv.GetColumn(0));
-        worldInertia.SetRow(1, worldInertiaInv.GetColumn(1));
-        worldInertia.SetRow(2, worldInertiaInv.GetColumn(2));
-        worldInertia.SetRow(3, worldInertiaInv.GetColumn(3));
+        //
+        //worldInertia.SetRow(0, worldInertiaInv.GetColumn(0));
+        //worldInertia.SetRow(1, worldInertiaInv.GetColumn(1));
+        //worldInertia.SetRow(2, worldInertiaInv.GetColumn(2));
+        //worldInertia.SetRow(3, worldInertiaInv.GetColumn(3));
     }
     
     // assumed always global
