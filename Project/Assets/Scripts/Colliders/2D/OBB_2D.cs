@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class OBB : CollisionHull2D
+public class OBB_2D : CollisionHull2D
 {
     public Vector2 halfWidths { get; private set; }
     protected Vector2[] axis;
@@ -39,7 +39,7 @@ public class OBB : CollisionHull2D
         axis[1] = new Vector2(-Mathf.Sin(particle.rotation), Mathf.Sin(particle.rotation));
     }
 
-    public OBB( Vector2 halfWidths):base(CollisionHullType2D.OBB)
+    public OBB_2D( Vector2 halfWidths):base(CollisionHullType2D.OBB)
     {
         this.halfWidths = halfWidths;
         axis[0] = new Vector2(Mathf.Cos(particle.rotation), Mathf.Sin(particle.rotation));
@@ -51,12 +51,12 @@ public class OBB : CollisionHull2D
         return CollisionHull2D.TestCollision(other, this, out collision);
     }
 
-    protected override bool TestCollisionVsAABB(AABB other, out Collision collision)
+    protected override bool TestCollisionVsAABB(AABB_2D other, out Collision collision)
     {
         return CollisionHull2D.TestCollision(other, this, out collision);
     }
 
-    protected override bool TestCollisionVsOBB(OBB other, out Collision collision)
+    protected override bool TestCollisionVsOBB(OBB_2D other, out Collision collision)
     {
         collision = null;
 

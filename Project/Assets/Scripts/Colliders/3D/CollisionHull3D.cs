@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public abstract class CollisionHull2D : MonoBehaviour
+public abstract class CollisionHull3D : MonoBehaviour
 {
     public class Collision
     {
         public struct Contact
         {
-            public Vector2 point;
-            public Vector2 normal;
+            public Vector3 point;
+            public Vector3 normal;
             public float restitution;
             public float penetrationDepth;
         }
 
-        public CollisionHull2D a = null, b = null;
+        public CollisionHull3D a = null, b = null;
         public Contact[] contact = new Contact[4];
         public int contactCount = 0;
         public bool status = false;
@@ -27,44 +27,44 @@ public abstract class CollisionHull2D : MonoBehaviour
     }
 
 
-    public enum CollisionHullType2D
+    public enum CollisionHullType3D
     {
         INVALID_TYPE = -1,
-        CIRCLE,
+        SPHERE,
         AABB,
         OBB,
         NUM_TYPES
     }
 
-    public CollisionHullType2D type = CollisionHullType2D.INVALID_TYPE;// { get; protected set; }
-    public Particle2D particle { get; private set; }
+    public CollisionHullType3D type = CollisionHullType3D.INVALID_TYPE;// { get; protected set; }
+    public Particle3D particle { get; private set; }
 
-    protected CollisionHull2D(CollisionHullType2D collisionType)
+    protected CollisionHull3D(CollisionHullType3D collisionType)
     {
-        particle = GetComponent<Particle2D>();
+        particle = GetComponent<Particle3D>();
         type = collisionType;
     }
 
     private void Awake()
     {
-        particle = GetComponent<Particle2D>();
+        particle = GetComponent<Particle3D>();
     }
 
     // return a collision instead of a bool
     // or use ref to pass a collision
-    public static bool TestCollision(CollisionHull2D a, CollisionHull2D b, out Collision collision)
+    public static bool TestCollision(CollisionHull3D a, CollisionHull3D b, out Collision collision)
     {
         switch (b.type)
         {
-            case CollisionHullType2D.CIRCLE:
+            case CollisionHullType3D.CIRCLE:
             {
-                return a.TestCollisionVsCircle((Circle)b, out collision);
+                return a.TestCollisionVsCircle((Sphere)b, out collision);
             }
-            case CollisionHullType2D.AABB:
+            case CollisionHullType3D.AABB:
             {
                 return a.TestCollisionVsAABB((AABB)b, out collision);
             }
-            case CollisionHullType2D.OBB:
+            case CollisionHullType3D.OBB:
             {
                 return a.TestCollisionVsOBB((OBB)b, out collision);
             }
@@ -73,7 +73,7 @@ public abstract class CollisionHull2D : MonoBehaviour
         return false;
     }
 
-    protected abstract bool TestCollisionVsCircle(Circle other, out Collision collision);
+    protected abstract bool TestCollisionVsCircle(Sphere other, out Collision collision);
     protected abstract bool TestCollisionVsAABB(AABB other, out Collision collision);
     protected abstract bool TestCollisionVsOBB(OBB other, out Collision collision);
 }

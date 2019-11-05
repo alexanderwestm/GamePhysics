@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class AABB : CollisionHull2D
+public class AABB_2D : CollisionHull2D
 {
     public Vector2 halfWidths { get; private set; }
 
-    public AABB(Vector2 halfWidths) : base(CollisionHullType2D.AABB)
+    public AABB_2D(Vector2 halfWidths) : base(CollisionHullType2D.AABB)
     {
         this.halfWidths = halfWidths;
     }
@@ -37,7 +37,7 @@ public class AABB : CollisionHull2D
         return CollisionHull2D.TestCollision(other, this, out collision);
     }
 
-    protected override bool TestCollisionVsAABB(AABB other, out Collision collision)
+    protected override bool TestCollisionVsAABB(AABB_2D other, out Collision collision)
     {
         collision = null;
         // if distance between centers is greater than half widths they're not colliding
@@ -55,7 +55,7 @@ public class AABB : CollisionHull2D
         return dist.x < sumHalfWidths.x && dist.y < sumHalfWidths.y;
     }
 
-    protected override bool TestCollisionVsOBB(OBB other, out Collision collision)
+    protected override bool TestCollisionVsOBB(OBB_2D other, out Collision collision)
     {
         collision = null;
         // Code from Michael Zheng and Ben Strong, using with permission

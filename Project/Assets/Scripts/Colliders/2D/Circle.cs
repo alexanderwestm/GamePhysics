@@ -55,7 +55,7 @@ public class Circle : CollisionHull2D
         return colliding;
     }
 
-    protected override bool TestCollisionVsAABB(AABB other, out Collision collision)
+    protected override bool TestCollisionVsAABB(AABB_2D other, out Collision collision)
     {
         collision = null;
         // find closest point to the circle on the box: clamp the (center - min) and (center - max)
@@ -94,7 +94,7 @@ public class Circle : CollisionHull2D
         return colliding;
     }
 
-    protected override bool TestCollisionVsOBB(OBB other, out Collision collision)
+    protected override bool TestCollisionVsOBB(OBB_2D other, out Collision collision)
     {
         collision = null;
         // same as aabb
