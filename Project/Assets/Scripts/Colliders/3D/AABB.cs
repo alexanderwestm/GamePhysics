@@ -37,6 +37,7 @@ public class AABB : CollisionHull3D
         return CollisionHull3D.TestCollision(other, this, out collision);
     }
 
+    // TO DO
     protected override bool TestCollisionVsAABB(AABB other, out Collision collision)
     {
         collision = null;
@@ -55,6 +56,7 @@ public class AABB : CollisionHull3D
         return dist.x < sumHalfWidths.x && dist.y < sumHalfWidths.y;
     }
 
+    // TO DO
     protected override bool TestCollisionVsOBB(OBB other, out Collision collision)
     {
         collision = null;

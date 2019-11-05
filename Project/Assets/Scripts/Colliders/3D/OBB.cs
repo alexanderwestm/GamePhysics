@@ -5,25 +5,24 @@ using UnityEngine;
 [System.Serializable]
 public class OBB : CollisionHull3D
 {
-    public Vector3 halfWidths { get; private set; }
+    public Vector3 halfWidths;
 
     private void Start()
     {
         MeshFilter meshFilter = gameObject.GetComponent<MeshFilter>();
         SpriteRenderer renderer = GetComponent<SpriteRenderer>();
-        Vector2 temp = new Vector2();
         if (meshFilter != null)
         {
-            temp.x = meshFilter.mesh.bounds.size.x * transform.localScale.x / 2;
-            temp.y = meshFilter.mesh.bounds.size.y * transform.localScale.y / 2;
+            halfWidths.x = meshFilter.mesh.bounds.size.x * transform.localScale.x * .5f;
+            halfWidths.y = meshFilter.mesh.bounds.size.y * transform.localScale.y * .5f;
+            halfWidths.z = meshFilter.mesh.bounds.size.z * transform.localScale.z * .5f;
         }
         else if (renderer != null)
         {
-            temp.x = renderer.sprite.bounds.size.x * transform.localScale.x * .5f;
-            temp.y = renderer.sprite.bounds.size.y * transform.localScale.y * .5f;
+            halfWidths.x = renderer.sprite.bounds.size.x * transform.localScale.x * .5f;
+            halfWidths.y = renderer.sprite.bounds.size.y * transform.localScale.y * .5f;
+            halfWidths.z = renderer.sprite.bounds.size.z * transform.localScale.z * .5f;
         }
-
-        halfWidths = new Vector2(temp.x, temp.y);
 
         type = CollisionHullType3D.OBB;
     }
@@ -43,6 +42,7 @@ public class OBB : CollisionHull3D
         return CollisionHull3D.TestCollision(other, this, out collision);
     }
 
+    // TO DO
     protected override bool TestCollisionVsOBB(OBB other, out Collision collision)
     {
         collision = null;
@@ -78,21 +78,23 @@ public class OBB : CollisionHull3D
         //22. check if other_max.x > this_min.x and other_max.y > this_min.y 
 
         bool check1, check2;
-        Vector2 thisMax, thisMin, otherMax, otherMin;
-        Vector2 p1, p2, p3, p4;
+        Vector3 thisMax, thisMin, otherMax, otherMin;
+        Vector3 p1, p2, p3, p4;
 
-        Vector2 otherPosition = other.particle.position;
+        Vector3 otherPosition = other.particle.position;
         float thisLength = halfWidths[0];
         float thisHeight = halfWidths[1];
+        float thisDepth = halfWidths[2];
         float otherLength = other.halfWidths[0];
         float otherHeight = other.halfWidths[1];
+        float otherDepth = halfWidths[2];
 
         //get all corner points and then rotate it
 
-        p1 = transform.worldToLocalMatrix * (new Vector2(thisLength, thisHeight));
-        p2 = transform.worldToLocalMatrix * (new Vector2(thisLength, -thisHeight));
-        p3 = transform.worldToLocalMatrix * (new Vector2(-thisLength, -thisHeight));
-        p4 = transform.worldToLocalMatrix * (new Vector2(-thisLength, thisHeight));
+        p1 = transform.worldToLocalMatrix * (new Vector3(thisLength, thisHeight));
+        p2 = transform.worldToLocalMatrix * (new Vector3(thisLength, -thisHeight));
+        p3 = transform.worldToLocalMatrix * (new Vector3(-thisLength, -thisHeight));
+        p4 = transform.worldToLocalMatrix * (new Vector3(-thisLength, thisHeight));
         //for each corner, move it relative to the box then transform by the world matrix inverse. Finally add position back
         p1 = other.transform.worldToLocalMatrix * (p1 + particle.position - otherPosition);
         p2 = other.transform.worldToLocalMatrix * (p2 + particle.position - otherPosition);
@@ -104,11 +106,11 @@ public class OBB : CollisionHull3D
         p3 += otherPosition;
         p4 += otherPosition;
 
-        thisMax = new Vector2(Mathf.Max(p1.x, p2.x, p3.x, p4.x), Mathf.Max(p1.y, p2.y, p3.y, p4.y));
-        thisMin = new Vector2(Mathf.Min(p1.x, p2.x, p3.x, p4.x), Mathf.Min(p1.y, p2.y, p3.y, p4.y));
+        thisMax = new Vector3(Mathf.Max(p1.x, p2.x, p3.x, p4.x), Mathf.Max(p1.y, p2.y, p3.y, p4.y), Mathf.Max(p1.z, p2.z, p3.z, p4.z));
+        thisMin = new Vector3(Mathf.Min(p1.x, p2.x, p3.x, p4.x), Mathf.Min(p1.y, p2.y, p3.y, p4.y), Mathf.Max(p1.z, p2.z, p3.z, p4.z));
 
-        otherMax = new Vector2(otherPosition.x + otherLength, otherPosition.y + otherHeight);
-        otherMin = new Vector2(otherPosition.x - otherLength, otherPosition.y - otherHeight);
+        otherMax = new Vector3(otherPosition.x + otherLength, otherPosition.y + otherHeight);
+        otherMin = new Vector3(otherPosition.x - otherLength, otherPosition.y - otherHeight);
 
         check1 = (thisMax.x >= otherMin.x && thisMax.y >= otherMin.y) && (otherMax.x >= thisMin.x && otherMax.y >= thisMin.y);
 
@@ -118,10 +120,10 @@ public class OBB : CollisionHull3D
         }
 
         //get all corner points and then rotate it
-        p1 = other.transform.worldToLocalMatrix * (new Vector2(otherLength, otherHeight));
-        p2 = other.transform.worldToLocalMatrix * (new Vector2(otherLength, -otherHeight));
-        p3 = other.transform.worldToLocalMatrix * (new Vector2(-otherLength, -otherHeight));
-        p4 = other.transform.worldToLocalMatrix * (new Vector2(-otherLength, otherHeight));
+        p1 = other.transform.worldToLocalMatrix * (new Vector3(otherLength, otherHeight));
+        p2 = other.transform.worldToLocalMatrix * (new Vector3(otherLength, -otherHeight));
+        p3 = other.transform.worldToLocalMatrix * (new Vector3(-otherLength, -otherHeight));
+        p4 = other.transform.worldToLocalMatrix * (new Vector3(-otherLength, otherHeight));
         //for each corner, move it relative to the box then transform by the world matrix inverse. Finally add position back
         p1 = transform.worldToLocalMatrix * (p1 + otherPosition - particle.position); //this
         p2 = transform.worldToLocalMatrix * (p2 + otherPosition - particle.position);
@@ -133,11 +135,11 @@ public class OBB : CollisionHull3D
         p3 += particle.position;
         p4 += particle.position;
 
-        otherMax = new Vector2(Mathf.Max(p1.x, p2.x, p3.x, p4.x), Mathf.Max(p1.y, p2.y, p3.y, p4.y));
-        otherMin = new Vector2(Mathf.Min(p1.x, p2.x, p3.x, p4.x), Mathf.Min(p1.y, p2.y, p3.y, p4.y));
+        otherMax = new Vector3(Mathf.Max(p1.x, p2.x, p3.x, p4.x), Mathf.Max(p1.y, p2.y, p3.y, p4.y));
+        otherMin = new Vector3(Mathf.Min(p1.x, p2.x, p3.x, p4.x), Mathf.Min(p1.y, p2.y, p3.y, p4.y));
 
-        thisMax = new Vector2(particle.position.x + thisLength, particle.position.y + thisHeight);
-        thisMin = new Vector2(particle.position.x - thisLength, particle.position.y - thisHeight);
+        thisMax = new Vector3(particle.position.x + thisLength, particle.position.y + thisHeight);
+        thisMin = new Vector3(particle.position.x - thisLength, particle.position.y - thisHeight);
 
         check2 = (thisMax.x >= otherMin.x && thisMax.y >= otherMin.y) && (otherMax.x >= thisMin.x && otherMax.y >= thisMin.y);
 

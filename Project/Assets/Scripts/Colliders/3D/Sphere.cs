@@ -60,13 +60,13 @@ public class Sphere : CollisionHull3D
         collision = null;
         // find closest point to the circle on the box: clamp the (center - min) and (center - max)
         // circle point collision test using closest point
-        Vector3 point = new Vector3(), otherMin, otherMax, delta;
+        Vector3 point = particle.position, otherMin, otherMax, delta;
 
         otherMin = other.particle.position - other.halfWidths;
         otherMax = other.particle.position + other.halfWidths;
 
         // find the closest point on the aabb
-        point.Vector3Clamp(otherMin, otherMax);
+        point = point.Vector3Clamp(otherMin, otherMax);
 
         //point.x = Mathf.Clamp(particle.position.x, otherMin.x, otherMax.x);
         //point.y = Mathf.Clamp(particle.position.y, otherMin.y, otherMax.y);
@@ -103,19 +103,18 @@ public class Sphere : CollisionHull3D
         // same as aabb
         // multiply circle center by box world matrix inverse
         //other.transform.worldToLocalMatrix
-        Matrix4x4 otherMat = other.transform.worldToLocalMatrix;
+        // to fix
+        Matrix4x4 otherMat = other.particle.worldTransformMatrixInverse;
+        //Matrix4x4 otherMat = other.transform.worldToLocalMatrix;
         Vector3 minExtents = other.particle.position - other.halfWidths, maxExtents = other.particle.position + other.halfWidths;
         Vector3 adjustedCenter = otherMat.MultiplyPoint3x4(particle.position);
         adjustedCenter.x *= other.transform.localScale.x;
         adjustedCenter.y *= other.transform.localScale.y;
         adjustedCenter += other.transform.position;
-        //adjustedCenter += particle.position;
 
-        Vector3 closestPoint = new Vector3();
+        Vector3 closestPoint = adjustedCenter;
 
-        closestPoint.Vector3Clamp(minExtents, maxExtents);
-        //closestPoint.x = Mathf.Clamp(adjustedCenter.x, minExtents.x, maxExtents.x);
-        //closestPoint.y = Mathf.Clamp(adjustedCenter.y, minExtents.y, maxExtents.y);
+        closestPoint = closestPoint.Vector3Clamp(minExtents, maxExtents);
 
         Vector3 deltaPos = adjustedCenter - closestPoint;
 

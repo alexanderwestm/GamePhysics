@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
+[RequireComponent(typeof(Particle3D))]
 public abstract class CollisionHull3D : MonoBehaviour
 {
     public class Collision
@@ -36,7 +37,7 @@ public abstract class CollisionHull3D : MonoBehaviour
         NUM_TYPES
     }
 
-    public CollisionHullType3D type = CollisionHullType3D.INVALID_TYPE;// { get; protected set; }
+    protected CollisionHullType3D type = CollisionHullType3D.INVALID_TYPE;
     public Particle3D particle { get; private set; }
 
     protected CollisionHull3D(CollisionHullType3D collisionType)
@@ -56,7 +57,7 @@ public abstract class CollisionHull3D : MonoBehaviour
     {
         switch (b.type)
         {
-            case CollisionHullType3D.CIRCLE:
+            case CollisionHullType3D.SPHERE:
             {
                 return a.TestCollisionVsCircle((Sphere)b, out collision);
             }

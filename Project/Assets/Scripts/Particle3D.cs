@@ -72,8 +72,8 @@ public class Particle3D : MonoBehaviour
     private Matrix4x4 worldInertia;
     private Matrix4x4 worldInertiaInv;
 
-    private Matrix4x4 worldTransformMatrix;
-    private Matrix4x4 worldTransformMatrixInverse;
+    public Matrix4x4 worldTransformMatrix;
+    public Matrix4x4 worldTransformMatrixInverse;
 
     public Vector3 centerOfMassLocal { get; private set; }
     public Vector3 centerOfMassGlobal { get; private set; }
@@ -89,6 +89,7 @@ public class Particle3D : MonoBehaviour
         SetMomentOfInertia(inertiaBody);
         worldTransformMatrix = new Matrix4x4();
         centerOfMassLocal = new Vector3(transform.localScale.x / 2f, transform.localScale.y / 2f, transform.localScale.z / 2f);
+        centerOfMassGlobal = transform.position;
 
         forceOfGravity = ForceGenerator.GenerateForce_gravity(Vector3.up, accelerationGravity, mass);
     }
@@ -113,10 +114,10 @@ public class Particle3D : MonoBehaviour
         float dirtWoodStatFricCoeff = .6f, dirtWoodKinFricCoeff = .55f;
         float cubeDragCoeff = 1.05f, airFluidDensity = .001225f;
 
+        UpdateWorldMatrix();
         if (simulate)
         {
             UpdateParticleData();
-            UpdateWorldMatrix();
 
             switch (updateType)
             {
@@ -346,7 +347,10 @@ public class Particle3D : MonoBehaviour
         worldTransformMatrix.SetColumn(2, rotationMatrix.GetColumn(2));
         worldTransformMatrix.SetColumn(3, positionVector);
 
-        worldTransformMatrixInverse = worldTransformMatrix.transpose;
+        //worldTransformMatrixInverse = worldTransformMatrix.transpose;
+        worldTransformMatrixInverse.SetRow(0, worldTransformMatrix.GetColumn(0));
+        worldTransformMatrixInverse.SetRow(1, worldTransformMatrix.GetColumn(1));
+        worldTransformMatrixInverse.SetRow(2, worldTransformMatrix.GetColumn(2));
         worldTransformMatrixInverse.SetColumn(3, -positionVector);
 
         worldInertiaInv = worldTransformMatrixInverse * inertiaInv * worldTransformMatrix;
