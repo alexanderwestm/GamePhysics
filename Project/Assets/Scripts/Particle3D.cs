@@ -340,21 +340,25 @@ public class Particle3D : MonoBehaviour
     private void UpdateWorldMatrix()
     {
         Matrix4x4 rotationMatrix = rotation.GetRotationMatrix();
-        Vector4 positionVector = new Vector4(centerOfMassGlobal.x, centerOfMassGlobal.y, centerOfMassGlobal.z, 1);
+        Vector4 positionVector = new Vector4(transform.position.x, transform.position.y, transform.position.z, 1);
+        Vector4 negPosition = -positionVector;
+        negPosition.w = 1;
 
         worldTransformMatrix.SetColumn(0, rotationMatrix.GetColumn(0));
         worldTransformMatrix.SetColumn(1, rotationMatrix.GetColumn(1));
         worldTransformMatrix.SetColumn(2, rotationMatrix.GetColumn(2));
         worldTransformMatrix.SetColumn(3, positionVector);
 
-        //worldTransformMatrixInverse = worldTransformMatrix.transpose;
+        worldTransformMatrixInverse = worldTransformMatrix.transpose;
         worldTransformMatrixInverse.SetRow(0, worldTransformMatrix.GetColumn(0));
         worldTransformMatrixInverse.SetRow(1, worldTransformMatrix.GetColumn(1));
         worldTransformMatrixInverse.SetRow(2, worldTransformMatrix.GetColumn(2));
-        worldTransformMatrixInverse.SetColumn(3, -positionVector);
+        worldTransformMatrixInverse.SetColumn(3, negPosition);
 
         worldInertiaInv = worldTransformMatrixInverse * inertiaInv * worldTransformMatrix;
-        //
+
+        Matrix4x4 test = worldTransformMatrix * worldTransformMatrixInverse;
+
         //worldInertia.SetRow(0, worldInertiaInv.GetColumn(0));
         //worldInertia.SetRow(1, worldInertiaInv.GetColumn(1));
         //worldInertia.SetRow(2, worldInertiaInv.GetColumn(2));

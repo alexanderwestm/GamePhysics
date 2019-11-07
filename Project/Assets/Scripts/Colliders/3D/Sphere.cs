@@ -97,6 +97,8 @@ public class Sphere : CollisionHull3D
         return colliding;
     }
 
+    Vector3 test;
+
     protected override bool TestCollisionVsOBB(OBB other, out Collision collision)
     {
         collision = null;
@@ -108,9 +110,11 @@ public class Sphere : CollisionHull3D
         //Matrix4x4 otherMat = other.transform.worldToLocalMatrix;
         Vector3 minExtents = other.particle.position - other.halfWidths, maxExtents = other.particle.position + other.halfWidths;
         Vector3 adjustedCenter = otherMat.MultiplyPoint3x4(particle.position);
-        adjustedCenter.x *= other.transform.localScale.x;
-        adjustedCenter.y *= other.transform.localScale.y;
+        //adjustedCenter.x *= other.transform.localScale.x;
+        //adjustedCenter.y *= other.transform.localScale.y;
         adjustedCenter += other.transform.position;
+
+        test = adjustedCenter;
 
         Vector3 closestPoint = adjustedCenter;
 
@@ -139,5 +143,10 @@ public class Sphere : CollisionHull3D
         //}
 
         return colliding;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(test, .1f);
     }
 }

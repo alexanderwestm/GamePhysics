@@ -132,8 +132,6 @@ public struct PhysicsQuaternion
 
     public Matrix4x4 GetRotationMatrix()
     {
-        Matrix4x4 returnMatrix = new Matrix4x4();
-
         Vector4 col1, col2, col3, col4;
 
         // slide 52
