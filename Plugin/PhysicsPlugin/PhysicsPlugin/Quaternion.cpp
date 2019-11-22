@@ -1,4 +1,5 @@
 #include "Quaternion.h"
+#include <math.h>
 
 Quaternion::Quaternion(float w, float x, float y, float z)
 {
@@ -6,6 +7,9 @@ Quaternion::Quaternion(float w, float x, float y, float z)
 	this->x = x;
 	this->y = y;
 	this->z = z;
+
+	sqLength = w * w + x * x + y * y + z * z;
+	length = sqrt(sqLength);
 }
 
 Quaternion::Quaternion(Vector3 vec, float w)
@@ -14,6 +18,9 @@ Quaternion::Quaternion(Vector3 vec, float w)
 	this->x = vec.x;
 	this->y = vec.y;
 	this->z = vec.z;
+
+	sqLength = w * w + x * x + y * y + z * z;
+	length = sqrt(sqLength);
 }
 
 Quaternion Quaternion::operator*(Vector3 const& vec)
@@ -43,14 +50,19 @@ Quaternion Quaternion::operator*(Quaternion const& other)
 
 Quaternion Quaternion::operator+(Quaternion const& other)
 {
-	return Quaternion();
+	return Quaternion(this->w + other.w, this->x + other.x, this->w + other.y, this->z + other.z);
 }
 
-Quaternion Quaternion::operator-(Quaternion const& other)
+Quaternion Quaternion::operator-()
 {
-	return Quaternion();
+	return Quaternion(-this->w, -this->x, -this->y, -this->z);
 }
 
 void Quaternion::normalize()
 {
+	float invLength = 1 / length;
+	w = w * invLength;
+	x = x * invLength;
+	y = y * invLength;
+	z = z * invLength;
 }

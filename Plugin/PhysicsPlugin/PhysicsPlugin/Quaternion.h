@@ -14,11 +14,12 @@ class Quaternion
 		Quaternion operator*(Quaternion const& other);
 
 		Quaternion operator+(Quaternion const& other);
-		Quaternion operator-(Quaternion const& other);
+		Quaternion operator-();
 
 		void normalize();
 
 		float w, x, y, z;
+		float length, sqLength;
 	private:
 };
 
