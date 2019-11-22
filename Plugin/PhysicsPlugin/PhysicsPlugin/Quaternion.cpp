@@ -1,6 +1,16 @@
 #include "Quaternion.h"
 #include <math.h>
 
+Quaternion Quaternion::identity = Quaternion(1, 0, 0, 0);
+
+Quaternion::Quaternion()
+{
+	w = 1;
+	x = y = z = 0;
+	sqLength = 1;
+	length = 1;
+}
+
 Quaternion::Quaternion(float w, float x, float y, float z)
 {
 	this->w = w;
@@ -50,12 +60,38 @@ Quaternion Quaternion::operator*(Quaternion const& other)
 
 Quaternion Quaternion::operator+(Quaternion const& other)
 {
-	return Quaternion(this->w + other.w, this->x + other.x, this->w + other.y, this->z + other.z);
+	return Quaternion(w + other.w, x + other.x, y + other.y, z + other.z);
+}
+
+Quaternion Quaternion::operator-(Quaternion const& other)
+{
+	return Quaternion(w - other.w, x - other.x, y - other.y, z - other.z);
 }
 
 Quaternion Quaternion::operator-()
 {
-	return Quaternion(-this->w, -this->x, -this->y, -this->z);
+	return Quaternion(-w, -x, -y, -z);
+}
+
+Quaternion Quaternion::operator+=(Quaternion const& other)
+{
+	this->w += other.w;
+	this->x += other.x;
+	this->y += other.y;
+	this->z += other.z;
+	return *this;
+}
+
+Quaternion Quaternion::operator=(Quaternion const& other)
+{
+	this->w = other.w;
+	this->x = other.x;
+	this->y = other.y;
+	this->z = other.z;
+
+	this->length = other.length;
+	this->sqLength = other.sqLength;
+	return *this;
 }
 
 void Quaternion::normalize()

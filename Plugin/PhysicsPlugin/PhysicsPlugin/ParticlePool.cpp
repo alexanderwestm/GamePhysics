@@ -2,6 +2,10 @@
 
 #include <assert.h>
 
+ParticlePool::ParticlePool()
+{
+}
+
 ParticlePool::ParticlePool(int size)
 {
 	particles = new Particle[size];
@@ -21,7 +25,7 @@ ParticlePool::~ParticlePool()
 	delete[] particles;
 }
 
-void ParticlePool::AddItem(Particle* part)
+int ParticlePool::AddItem(Particle* part)
 {
 	assert(nextAvailable != nullptr);
 
@@ -31,7 +35,9 @@ void ParticlePool::AddItem(Particle* part)
 	}
 	part->setNext(nextAvailable->getNext());
 	nextAvailable = nextAvailable->getNext();
+	int num = nextAvailableIndex;
 	nextAvailableIndex++;
+	return num;
 }
 
 void ParticlePool::RemoveItem(Particle* part)

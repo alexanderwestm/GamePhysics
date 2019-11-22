@@ -1,7 +1,17 @@
-﻿  pch.cpp
-  dllmain.cpp
-  Foo.cpp
+﻿  Integrator.cpp
+  Particle.cpp
+  ParticlePool.cpp
+  ParticleSystem.cpp
   Plugin.cpp
+  Quaternion.cpp
+D:\1SCHOOL\Year 4\Game Physics\Plugin\PhysicsPlugin\PhysicsPlugin\Quaternion.cpp(22,15): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+D:\1SCHOOL\Year 4\Game Physics\Plugin\PhysicsPlugin\PhysicsPlugin\Quaternion.cpp(33,15): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+D:\1SCHOOL\Year 4\Game Physics\Plugin\PhysicsPlugin\PhysicsPlugin\Quaternion.cpp(38,17): warning C4101:  'z': unreferenced local variable
+D:\1SCHOOL\Year 4\Game Physics\Plugin\PhysicsPlugin\PhysicsPlugin\Quaternion.cpp(38,14): warning C4101:  'y': unreferenced local variable
+D:\1SCHOOL\Year 4\Game Physics\Plugin\PhysicsPlugin\PhysicsPlugin\Quaternion.cpp(38,11): warning C4101:  'x': unreferenced local variable
+  Vector3.cpp
+D:\1SCHOOL\Year 4\Game Physics\Plugin\PhysicsPlugin\PhysicsPlugin\Quaternion.cpp(38,8): warning C4101:  'w': unreferenced local variable
   Generating Code...
-     Creating library C:\Users\alexander.west\Desktop\New folder\Plugin\PhysicsPlugin\Debug\PhysicsPlugin.lib and object C:\Users\alexander.west\Desktop\New folder\Plugin\PhysicsPlugin\Debug\PhysicsPlugin.exp
-  PhysicsPlugin.vcxproj -> C:\Users\alexander.west\Desktop\New folder\Plugin\PhysicsPlugin\Debug\PhysicsPlugin.dll
+D:\1SCHOOL\Year 4\Game Physics\Plugin\PhysicsPlugin\PhysicsPlugin\Vector3.cpp(34,15): warning C4244:  '=': conversion from 'double' to 'float', possible loss of data
+     Creating library D:\1SCHOOL\Year 4\Game Physics\Plugin\PhysicsPlugin\PhysicsPlugin\Debug\PhysicsPlugin.lib and object D:\1SCHOOL\Year 4\Game Physics\Plugin\PhysicsPlugin\PhysicsPlugin\Debug\PhysicsPlugin.exp
+  PhysicsPlugin.vcxproj -> D:\1SCHOOL\Year 4\Game Physics\Plugin\PhysicsPlugin\PhysicsPlugin\Debug\PhysicsPlugin.dll

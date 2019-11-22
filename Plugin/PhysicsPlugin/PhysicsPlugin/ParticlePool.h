@@ -6,16 +6,21 @@
 class ParticlePool
 {
 	public:
+		ParticlePool();
 		ParticlePool(int size);
 		~ParticlePool();
 
-		void AddItem(Particle* part);
+		int AddItem(Particle* part);
 		void RemoveItem(Particle* part);
+		inline Particle& GetItem(int index) { return particles[index]; }
+
+		inline int getSize() { return maxSize; }
 	private:
 		Particle* particles;
 		Particle* nextAvailable;
 		int nextAvailableIndex;
 		int maxSize;
 };
+
 
 #endif

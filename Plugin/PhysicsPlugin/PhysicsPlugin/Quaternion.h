@@ -3,9 +3,13 @@
 
 #include "Vector3.h"
 
+
 class Quaternion
 {
 	public:
+		static Quaternion identity;
+
+		Quaternion();
 		Quaternion(float w, float x, float y, float z);
 		Quaternion(Vector3 vec, float w);
 
@@ -14,7 +18,11 @@ class Quaternion
 		Quaternion operator*(Quaternion const& other);
 
 		Quaternion operator+(Quaternion const& other);
+		Quaternion operator-(Quaternion const& other);
 		Quaternion operator-();
+
+		Quaternion operator+=(Quaternion const& other);
+		Quaternion operator=(Quaternion const& other);
 
 		void normalize();
 
@@ -22,5 +30,4 @@ class Quaternion
 		float length, sqLength;
 	private:
 };
-
 #endif // !QUATERNION_H
