@@ -14,6 +14,7 @@ public class NParticle : MonoBehaviour
     public Vector3 netForce;
 
     public bool isInit = false;
+    public int ID = -1;
 
     private void Awake()
     {
