@@ -406,7 +406,7 @@ public class Particle3D : MonoBehaviour
     private void UpdateAcceleration()
     {
         acceleration = massInv * totalForce;
-        totalForce = Vector2.zero;
+        totalForce = Vector3.zero;
     }
 
     private void UpdateAngularAcceleration()

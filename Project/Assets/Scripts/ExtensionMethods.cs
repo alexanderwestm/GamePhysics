@@ -19,4 +19,9 @@ public static class ExtensionMethods
 
         return vector;
     }
+
+    public static Vector3 RandomVector(Vector3 minRange, Vector3 maxRange)
+    {
+        return new Vector3(Random.Range(minRange.x, maxRange.x), Random.Range(minRange.y, maxRange.y), Random.Range(minRange.z, maxRange.z));
+    }
 }
