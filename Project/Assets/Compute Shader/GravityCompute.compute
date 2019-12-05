@@ -11,14 +11,15 @@ struct PhysicsData
 	float3 velocityA;
 	float3 velocityB;
 	float2 mass;
+
+	float3 netForceOutput;
 };
 
 // Create a RenderTexture with enableRandomWrite flag and set it
 // with cs.SetTexture
 //RWTexture2D<float4> Result;
 
-StructuredBuffer<PhysicsData> physicsDataBuffer;
-RWStructuredBuffer<float3> netForceBuffer;
+RWStructuredBuffer<PhysicsData> physicsDataBuffer;
 
 [numthreads(16,1,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
@@ -34,5 +35,5 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
 	float3 distance = posB - posA;
 	float3 force = (G * massA * massB * normalize(distance)) / dot(distance, distance);
-	netForceBuffer[id.x] = force;
+	physicsDataBuffer[id.x].netForceOutput = force;
 }

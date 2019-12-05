@@ -10,7 +10,7 @@ public class NCollisionChecker : MonoBehaviour
     List<NSphereCollider> sphereColliders;
     List<NSphereCollider> toDelete;
 
-    bool isInit = false;
+    public bool isInit = false;
 
     private void Awake()
     {

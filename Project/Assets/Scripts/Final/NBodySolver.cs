@@ -9,6 +9,14 @@ struct PhysicsData
     public Vector3 velocityA;
     public Vector3 velocityB;
     public Vector2 mass;
+
+    public Vector3 output;
+};
+
+struct InfluencePairs
+{
+    public NParticle a;
+    public NParticle b;
 };
 
 public class NBodySolver : MonoBehaviour
@@ -18,23 +26,27 @@ public class NBodySolver : MonoBehaviour
     //private const float G = 6.67408f;
     private const float G = 6.5f;
     List<NParticle> particles;
+    List<InfluencePairs> influencePairs;
 
     public ComputeShader gravityComputeShader;
+    ComputeBuffer computeBuffer;
 
     PhysicsData tempData;
     PhysicsData[] physicsDataBuffer;
-    Vector3[] netForceBuffer;
+    //Vector3[] netForceBuffer;
     int bufferIndexer = 0;
 
-    bool isInit = false;
+    public bool isInit = false;
     private void Awake()
     {
+        computeBuffer = new ComputeBuffer(physicsDataBuffer.Length, 68);
         particles = new List<NParticle>(FindObjectsOfType<NParticle>());
-        if(particles.Count != 0)
+        if (particles.Count != 0)
         {
             isInit = true;
-            physicsDataBuffer = new PhysicsData[particles.Count];
-            netForceBuffer = new Vector3[particles.Count];
+            physicsDataBuffer = new PhysicsData[particles.Count * particles.Count];
+            influencePairs = new List<InfluencePairs>();
+            //netForceBuffer = new Vector3[particles.Count];
         }
         if(_instance == null)
         {
@@ -67,10 +79,15 @@ public class NBodySolver : MonoBehaviour
                         tempData.velocityB = particleK.velocity;
                         tempData.mass.x = particleJ.mass;
                         tempData.mass.y = particleK.mass;
+
+                        influencePairs.Add(new InfluencePairs() { a = particleJ, b = particleK });
                         //SolveGravity(particles[j], particles[k]);
                     }
                 }
             }
+            Debug.Log(bufferIndexer);
+            bufferIndexer = 0;
+            RunComputeShader();
         }
     }
 
@@ -91,18 +108,26 @@ public class NBodySolver : MonoBehaviour
     public void Init()
     {
         particles = new List<NParticle>(FindObjectsOfType<NParticle>());
-        physicsDataBuffer = new PhysicsData[particles.Count];
-        netForceBuffer = new Vector3[particles.Count];
+        physicsDataBuffer = new PhysicsData[particles.Count * particles.Count];
+        influencePairs = new List<InfluencePairs>();
+        //netForceBuffer = new Vector3[particles.Count];
         isInit = true;
     }
 
     private void RunComputeShader()
     {
-        // 14 floats * 4 bytes (per float) = 56 bytes of data
-        ComputeBuffer buffer = new ComputeBuffer(physicsDataBuffer.Length, 56);
-        buffer.SetData(physicsDataBuffer);
+        // 17 floats * 4 bytes (per float) = 60 bytes of data
+        computeBuffer.SetData(physicsDataBuffer);
         int kernel = gravityComputeShader.FindKernel("CSMain");
-        gravityComputeShader.SetBuffer(kernel, "physicsDataBuffer", buffer);
-        gravityComputeShader.Dispatch(kernel, physicsDataBuffer.Length, 1, 1);
+        gravityComputeShader.SetBuffer(kernel, "physicsDataBuffer", computeBuffer);
+        gravityComputeShader.Dispatch(kernel, 16, 1, 1);
+        computeBuffer.GetData(physicsDataBuffer);
+
+        for(int i = influencePairs.Count; i >= 0; --i)
+        {
+            influencePairs[i].a.netForce += physicsDataBuffer[i].output;
+            influencePairs[i].b.netForce -= physicsDataBuffer[i].output;
+        }
+        influencePairs.Clear();
     }
 }

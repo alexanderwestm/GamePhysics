@@ -189,6 +189,7 @@ MonoBehaviour:
   acceleration: {x: 0, y: 0, z: 0}
   netForce: {x: 0, y: 0, z: 0}
   isInit: 1
+  ID: -1
 --- !u!23 &689437583
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -300,6 +301,7 @@ MonoBehaviour:
   acceleration: {x: 0, y: 0, z: 0}
   netForce: {x: 0, y: 0, z: 0}
   isInit: 0
+  ID: -1
 --- !u!23 &906788089
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -408,6 +410,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14d09d39d5f51984cb12f0f19ad126c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gravityComputeShader: {fileID: 7200000, guid: e8df3b0f45d4e0243a7ccdc04b5760a3,
+    type: 3}
 --- !u!4 &1106206193
 Transform:
   m_ObjectHideFlags: 0
@@ -493,6 +497,7 @@ MonoBehaviour:
   acceleration: {x: 0, y: 0, z: 0}
   netForce: {x: 0, y: 0, z: 0}
   isInit: 1
+  ID: -1
 --- !u!23 &1212633618
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -688,6 +693,7 @@ MonoBehaviour:
   acceleration: {x: 0, y: 0, z: 0}
   netForce: {x: 0, y: 0, z: 0}
   isInit: 1
+  ID: -1
 --- !u!23 &2095854231
 MeshRenderer:
   m_ObjectHideFlags: 0

@@ -25,4 +25,16 @@ public class NSimulation : MonoBehaviour
         NBodySolver.Instance.Init();
         NCollisionChecker.Instance.Init();
     }
+
+    private void Update()
+    {
+        if(NBodySolver.Instance != null && !NBodySolver.Instance.isInit)
+        {
+            NBodySolver.Instance.Init();
+        }
+        if (NCollisionChecker.Instance != null && !NCollisionChecker.Instance.isInit)
+        {
+            NCollisionChecker.Instance.Init();
+        }
+    }
 }
