@@ -6,11 +6,36 @@ struct PhysicsData
 {
     public Vector3 positionA;
     public Vector3 positionB;
-    public Vector3 velocityA;
-    public Vector3 velocityB;
     public Vector2 mass;
 
     public Vector3 output;
+
+    public void SetData(NParticle a, NParticle b)
+    {
+        positionA = a.position;
+        positionB = b.position;
+        mass.x = a.mass;
+        mass.y = b.mass;
+        output = Vector3.zero;
+    }
+};
+
+public struct ParticleData
+{
+    public Vector3 position;
+    public Vector3 velocity;
+    public Vector3 acceleration;
+    public float massInv;
+    public Vector3 netForce;
+
+    public void SetData(NParticle particle)
+    {
+        position = particle.position;
+        velocity = particle.velocity;
+        acceleration = particle.acceleration;
+        netForce = particle.netForce;
+        massInv = particle.massInv;
+    }
 };
 
 struct InfluencePairs
@@ -29,23 +54,30 @@ public class NBodySolver : MonoBehaviour
     List<InfluencePairs> influencePairs;
 
     public ComputeShader gravityComputeShader;
-    ComputeBuffer computeBuffer;
+    ComputeBuffer gravityComputeBuffer;
 
-    PhysicsData tempData;
     PhysicsData[] physicsDataBuffer;
     //Vector3[] netForceBuffer;
-    int bufferIndexer = 0;
+    int gravityBufferIndexer = 0;
+
+    public ComputeShader particleUpdateComputeShader;
+    ComputeBuffer particleComputeBuffer;
+    ParticleData[] particleDataBuffer;
 
     public bool isInit = false;
     private void Awake()
     {
-        computeBuffer = new ComputeBuffer(physicsDataBuffer.Length, 68);
-        particles = new List<NParticle>(FindObjectsOfType<NParticle>());
-        if (particles.Count != 0)
+        NParticle[] nParticles = FindObjectsOfType<NParticle>();
+        if(nParticles != null && nParticles.Length > 0)
         {
-            isInit = true;
-            physicsDataBuffer = new PhysicsData[particles.Count * particles.Count];
-            influencePairs = new List<InfluencePairs>();
+            Init();
+            //particles = new List<NParticle>(FindObjectsOfType<NParticle>());
+            //
+            //isInit = true;
+            //physicsDataBuffer = new PhysicsData[particles.Count * particles.Count];
+            //influencePairs = new List<InfluencePairs>();
+            //
+            //particleDataBuffer = new ParticleData[particles.Count];
             //netForceBuffer = new Vector3[particles.Count];
         }
         if(_instance == null)
@@ -63,37 +95,18 @@ public class NBodySolver : MonoBehaviour
     {
         if(isInit && ParticleTimer.Instance.update)
         {
-            for(int j = 0; j < particles.Count; ++j)
-            {
-                for(int k = j + 1; k < particles.Count; ++k)
-                {
-                    // this might slow things down so do I need to actually do this?
-                    // might be faster just to ship it to a computer shader
-                    NParticle particleJ = particles[j], particleK = particles[k];
-                    if (particles[j] != particles[k])
-                    {
-                        tempData = physicsDataBuffer[bufferIndexer++];
-                        tempData.positionA = particleJ.position;
-                        tempData.positionB = particleK.position;
-                        tempData.velocityA = particleJ.velocity;
-                        tempData.velocityB = particleK.velocity;
-                        tempData.mass.x = particleJ.mass;
-                        tempData.mass.y = particleK.mass;
-
-                        influencePairs.Add(new InfluencePairs() { a = particleJ, b = particleK });
-                        //SolveGravity(particles[j], particles[k]);
-                    }
-                }
-            }
-            Debug.Log(bufferIndexer);
-            bufferIndexer = 0;
-            RunComputeShader();
+            SetGravityBufferData();
+            RunGravityCompute();
+            SetParticleBufferData();
+            RunUpdateCompute();
         }
     }
 
     public void RemoveItem(NParticle particle)
     {
         particles.Remove(particle);
+        particleDataBuffer = new ParticleData[particles.Count];
+        physicsDataBuffer = new PhysicsData[particles.Count * particles.Count];
     }
 
     private void SolveGravity(NParticle a, NParticle b)
@@ -110,24 +123,83 @@ public class NBodySolver : MonoBehaviour
         particles = new List<NParticle>(FindObjectsOfType<NParticle>());
         physicsDataBuffer = new PhysicsData[particles.Count * particles.Count];
         influencePairs = new List<InfluencePairs>();
+
+        particleDataBuffer = new ParticleData[particles.Count];
         //netForceBuffer = new Vector3[particles.Count];
         isInit = true;
     }
 
-    private void RunComputeShader()
+    private void SetGravityBufferData()
     {
-        // 17 floats * 4 bytes (per float) = 60 bytes of data
-        computeBuffer.SetData(physicsDataBuffer);
-        int kernel = gravityComputeShader.FindKernel("CSMain");
-        gravityComputeShader.SetBuffer(kernel, "physicsDataBuffer", computeBuffer);
-        gravityComputeShader.Dispatch(kernel, 16, 1, 1);
-        computeBuffer.GetData(physicsDataBuffer);
+        NParticle particleJ, particleK;
+        for (int j = 0; j < particles.Count; ++j)
+        {
+            particleJ = particles[j];
+            for (int k = 0; k < particles.Count; ++k)
+            {
+                // this might slow things down so do I need to actually do this?
+                // might be faster just to ship it to a computer shader
+                particleK = particles[k];
+                if (particles[j] != particles[k])
+                {
+                    physicsDataBuffer[gravityBufferIndexer].SetData(particleJ, particleK); 
+                    //physicsDataBuffer[gravityBufferIndexer].positionA = particleJ.position;
+                    //physicsDataBuffer[gravityBufferIndexer].positionB = particleK.position;
+                    //physicsDataBuffer[gravityBufferIndexer].mass.x = particleJ.mass;
+                    //physicsDataBuffer[gravityBufferIndexer].mass.y = particleK.mass;
 
-        for(int i = influencePairs.Count; i >= 0; --i)
+                    gravityBufferIndexer++;
+
+                    influencePairs.Add(new InfluencePairs() { a = particleJ, b = particleK });
+                    //SolveGravity(particles[j], particles[k]);
+                }
+            }
+        }
+        gravityBufferIndexer = 0;
+    }
+
+    private void SetParticleBufferData()
+    {
+        for(int i = particles.Count - 1; i >= 0; --i)
+        {
+            particleDataBuffer[i].SetData(particles[i]);
+        }
+    }
+
+    private void RunGravityCompute()
+    {
+        // 17 floats * 4 bytes (per float) = 68 bytes of data
+        gravityComputeBuffer = new ComputeBuffer(physicsDataBuffer.Length, 44);
+        gravityComputeBuffer.SetData(physicsDataBuffer);
+        int kernel = gravityComputeShader.FindKernel("CSMain");
+        gravityComputeShader.SetBuffer(kernel, "physicsDataBuffer", gravityComputeBuffer);
+        gravityComputeShader.Dispatch(kernel, 32, 32, 1);
+        gravityComputeBuffer.GetData(physicsDataBuffer);
+
+        for(int i = influencePairs.Count - 1; i >= 0; --i)
         {
             influencePairs[i].a.netForce += physicsDataBuffer[i].output;
             influencePairs[i].b.netForce -= physicsDataBuffer[i].output;
         }
         influencePairs.Clear();
+        gravityComputeBuffer.Release();
+    }
+
+    private void RunUpdateCompute()
+    {
+        // 13 floats * 4 bytes = 52 bytes
+        particleComputeBuffer = new ComputeBuffer(particleDataBuffer.Length, 52);
+        particleComputeBuffer.SetData(particleDataBuffer);
+        int kernel = particleUpdateComputeShader.FindKernel("KinematicUpdate");
+        particleUpdateComputeShader.SetBuffer(kernel, "particleDataBuffer", particleComputeBuffer);
+        particleUpdateComputeShader.SetFloat("deltaTime", ParticleTimer.Instance.timer);
+        particleUpdateComputeShader.Dispatch(kernel, 32, 32, 1);
+        particleComputeBuffer.GetData(particleDataBuffer);
+
+        for (int i = particles.Count - 1; i >= 0; --i)
+        {
+            particles[i].SetParticleData(particleDataBuffer[i]);
+        }
+        particleComputeBuffer.Release();
     }
 }

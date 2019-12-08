@@ -65,7 +65,6 @@ public class NCollisionChecker : MonoBehaviour
     {
         float aMass = a.particle.mass, bMass = b.particle.mass;
         Vector3 aVel = a.particle.velocity, bVel = b.particle.velocity;
-        // this seems wrong?
         a.particle.velocity = (aMass * aVel + bMass * bVel) / (aMass + bMass);
     }
 

@@ -7,10 +7,10 @@ public class NParticle : MonoBehaviour
     [SerializeField] bool allowFreeMovement = false;
 
     public float mass;
-    float massInv;
+    public float massInv;
     public Vector3 position;
     public Vector3 velocity;
-    [SerializeField] Vector3 acceleration;
+    public Vector3 acceleration;
     public Vector3 netForce;
 
     public bool isInit = false;
@@ -38,11 +38,11 @@ public class NParticle : MonoBehaviour
                 position = transform.position;
             }
 
-            if (ParticleTimer.Instance.update)
-            {
-                UpdateKinematic(ParticleTimer.Instance.timer);
-                UpdateAcceleration();
-            }
+            //if (ParticleTimer.Instance.update)
+            //{
+            //    UpdateKinematic(ParticleTimer.Instance.timer);
+            //    UpdateAcceleration();
+            //}
         }
     }
 
@@ -71,8 +71,21 @@ public class NParticle : MonoBehaviour
         isInit = true;
     }
 
+    public void SetParticleData(ParticleData data)
+    {
+        position = data.position;
+        velocity = data.velocity;
+        acceleration = data.acceleration;
+        netForce = data.netForce;
+    }
+
     private void OnDestroy()
     {
         NBodySolver.Instance.RemoveItem(this);
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawLine(transform.position, transform.position + velocity);
     }
 }

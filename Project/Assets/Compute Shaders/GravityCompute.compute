@@ -1,0 +1,29 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+struct PhysicsData
+{
+	float3 positionA;
+	float3 positionB;
+	float2 mass;
+
+	float3 output;
+};
+
+RWStructuredBuffer<PhysicsData> physicsDataBuffer;
+
+[numthreads(32,32,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+	int index = id.x + id.y * 32;
+
+	const float G = 6.67408;
+
+	float3 posA = physicsDataBuffer[index].positionA;
+	float3 posB = physicsDataBuffer[index].positionB;
+	float massA = physicsDataBuffer[index].mass.x;
+	float massB = physicsDataBuffer[index].mass.y;
+
+	float3 distance = posB - posA;
+	physicsDataBuffer[index].output = (G * massA * massB * normalize(distance)) / dot(distance, distance);
+}

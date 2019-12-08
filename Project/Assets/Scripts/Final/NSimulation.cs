@@ -15,7 +15,7 @@ public class NSimulation : MonoBehaviour
     private void Start()
     {
         GameObject list = GameObject.Find("ParticleList");
-        for(int i = numObjects; i >= 0; --i)
+        for(int i = numObjects - 1; i >= 0; --i)
         {
             GameObject obj = Instantiate(nParticlePrefab, list.transform);
             obj.GetComponent<NParticle>().Init(maxMass, lowerRangeVelocity, upperRangeVelocity, minPos, maxPos);

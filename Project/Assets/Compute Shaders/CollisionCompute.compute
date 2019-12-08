@@ -1,0 +1,38 @@
+﻿//// Each #kernel tells which function to compile; you can have many kernels
+//#pragma kernel CSMain
+//
+//// Create a RenderTexture with enableRandomWrite flag and set it
+//// with cs.SetTexture
+//RWTexture2D<float4> Result;
+//
+//[numthreads(8,8,1)]
+//void CSMain (uint3 id : SV_DispatchThreadID)
+//{
+//    // TODO: insert actual code here!
+//
+//    Result[id.xy] = float4(id.x & id.y, (id.x & 15)/15.0, (id.y & 15)/15.0, 0.0);
+//}
+
+#pragma kernel CircleCollision
+
+struct CircleData
+{
+	float3 positionA;
+	float3 positionB;
+	float2 radii;
+
+	bool collided;
+};
+
+RWStructuredBuffer<CircleData> circleColliderData;
+
+[numthreads(32,32,1)]
+void CircleCollision(uint3 id : SV_DispatchThreadID)
+{
+	int index = id.x + id.y * 32;
+	CircleData data = circleColliderData[index];
+	float sumRadii = data.radii.x + data.radii.y;
+	float3 distance = data.positionA - data.positionB;
+
+	circleColliderData[index].collided = dot(distance, distance) <= sumRadii * sumRadii;
+}

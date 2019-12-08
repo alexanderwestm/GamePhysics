@@ -26,8 +26,4 @@ public class NSphereCollider : MonoBehaviour
     {
         NCollisionChecker.Instance.RemoveItem(this);
     }
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawWireSphere(transform.position, radius);
-    }
 }
