@@ -11,6 +11,7 @@ public class ParticleTimer : MonoBehaviour
     public float timer;
 
     public bool update = false;
+    public bool useCompute = false;
 
     private void Awake()
     {
@@ -28,13 +29,13 @@ public class ParticleTimer : MonoBehaviour
         secondsPerUpdate = 1 / updatesPerSecond;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         update = secondsPerUpdate < timer;
         if(update)
         {
             timer = 0;
         }
-        timer += Time.deltaTime;
+        timer += Time.fixedDeltaTime;
     }
 }

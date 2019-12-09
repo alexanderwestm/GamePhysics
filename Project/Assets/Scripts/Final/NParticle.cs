@@ -25,7 +25,7 @@ public class NParticle : MonoBehaviour
         position = transform.position;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (isInit)
         {
@@ -38,11 +38,14 @@ public class NParticle : MonoBehaviour
                 position = transform.position;
             }
 
-            //if (ParticleTimer.Instance.update)
-            //{
-            //    UpdateKinematic(ParticleTimer.Instance.timer);
-            //    UpdateAcceleration();
-            //}
+            if(!ParticleTimer.Instance.useCompute)
+            {
+                if (ParticleTimer.Instance.update)
+                {
+                    UpdateKinematic(ParticleTimer.Instance.timer);
+                    UpdateAcceleration();
+                }
+            }
         }
     }
 

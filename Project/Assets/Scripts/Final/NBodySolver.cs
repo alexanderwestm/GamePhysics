@@ -49,7 +49,7 @@ public class NBodySolver : MonoBehaviour
     private static NBodySolver _instance;
     public static NBodySolver Instance { get { return _instance; } }
     //private const float G = 6.67408f;
-    private const float G = 6.5f;
+    readonly float G = 6.67408f;
     List<NParticle> particles;
     List<InfluencePairs> influencePairs;
 
@@ -67,19 +67,6 @@ public class NBodySolver : MonoBehaviour
     public bool isInit = false;
     private void Awake()
     {
-        NParticle[] nParticles = FindObjectsOfType<NParticle>();
-        if(nParticles != null && nParticles.Length > 0)
-        {
-            Init();
-            //particles = new List<NParticle>(FindObjectsOfType<NParticle>());
-            //
-            //isInit = true;
-            //physicsDataBuffer = new PhysicsData[particles.Count * particles.Count];
-            //influencePairs = new List<InfluencePairs>();
-            //
-            //particleDataBuffer = new ParticleData[particles.Count];
-            //netForceBuffer = new Vector3[particles.Count];
-        }
         if(_instance == null)
         {
             _instance = this;
@@ -91,14 +78,19 @@ public class NBodySolver : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if(isInit && ParticleTimer.Instance.update)
         {
+            float tempFloat = Time.realtimeSinceStartup;
             SetGravityBufferData();
-            RunGravityCompute();
-            SetParticleBufferData();
-            RunUpdateCompute();
+            if (ParticleTimer.Instance.useCompute)
+            {
+                RunGravityCompute();
+                SetParticleBufferData();
+                RunUpdateCompute();
+            }
+            Debug.Log("Time to update: " + (Time.realtimeSinceStartup - tempFloat));
         }
     }
 
@@ -112,10 +104,8 @@ public class NBodySolver : MonoBehaviour
     private void SolveGravity(NParticle a, NParticle b)
     {
         Vector3 distance = b.position - a.position;
-        Vector3 addForce = G * a.mass * b.mass * distance.normalized;
-        addForce /= Vector3.Dot(distance, distance);
 
-        a.netForce += addForce;
+        a.netForce = (G * a.mass * b.mass * distance.normalized) / Vector3.Dot(distance, distance);
     }
 
     public void Init()
@@ -142,16 +132,16 @@ public class NBodySolver : MonoBehaviour
                 particleK = particles[k];
                 if (particles[j] != particles[k])
                 {
-                    physicsDataBuffer[gravityBufferIndexer].SetData(particleJ, particleK); 
-                    //physicsDataBuffer[gravityBufferIndexer].positionA = particleJ.position;
-                    //physicsDataBuffer[gravityBufferIndexer].positionB = particleK.position;
-                    //physicsDataBuffer[gravityBufferIndexer].mass.x = particleJ.mass;
-                    //physicsDataBuffer[gravityBufferIndexer].mass.y = particleK.mass;
-
-                    gravityBufferIndexer++;
-
-                    influencePairs.Add(new InfluencePairs() { a = particleJ, b = particleK });
-                    //SolveGravity(particles[j], particles[k]);
+                    if (!ParticleTimer.Instance.useCompute)
+                    {
+                        SolveGravity(particles[j], particles[k]);
+                    }
+                    else
+                    {
+                        physicsDataBuffer[gravityBufferIndexer].SetData(particleJ, particleK);
+                        influencePairs.Add(new InfluencePairs() { a = particleJ, b = particleK });
+                        gravityBufferIndexer++;
+                    }
                 }
             }
         }
